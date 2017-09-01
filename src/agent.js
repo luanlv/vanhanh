@@ -3,13 +3,13 @@ import _superagent from 'superagent';
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
-const API_ROOT = 'http://localhost:8000';
-const API_ROOT_SOCKET = 'http://localhost:8001';
+// const API_ROOT = 'http://localhost:8000';
+// const API_ROOT_SOCKET = 'http://localhost:8001';
 
 // const API_ROOT = 'http://192.168.1.100:8000';
 
-// const API_ROOT = 'http://api.colombus.vn';
-// const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
+const API_ROOT = 'http://api.colombus.vn';
+const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
 
 const encode = encodeURIComponent;
 const responseBody = res => res.body;
