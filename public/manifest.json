@@ -1,0 +1,15 @@
+{
+  "short_name": "COLOMBUS",
+  "name": "VẬN TẢI COLOMBUS",
+  "icons": [
+    {
+      "src": "logo-white-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "black",
+  "background_color": "black"
+}
