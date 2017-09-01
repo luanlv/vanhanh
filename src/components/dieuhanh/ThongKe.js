@@ -39,18 +39,20 @@ class Home extends React.Component {
     this.state = {
       startValue: moment(Date.now()),
       endValue: moment(Date.now()),
-      thauphu: 'tatca',
+      khachhang: 'tatca',
       endOpen: false,
       init: false,
       loadingText: '...',
+
       danhsachthauphu: [],
       danhsachthauphuObj: {},
+
       danhsachlaixe: [],
       danhsachlaixeObj: {},
       
       do: []
     }
-    bindAll(this, 'init', 'changeThauPhu')
+    bindAll(this, 'init', 'changeKhachHang')
     this.init()
   }
   
@@ -61,6 +63,7 @@ class Home extends React.Component {
     
     const danhsachthauphu = await agent.DieuHanh.danhSachThauPhu()
     let danhsachthauphuObj = {}
+
     danhsachthauphu.map(el => {
       danhsachthauphuObj[el.ma] = el
     })
@@ -88,7 +91,7 @@ class Home extends React.Component {
   }
   
   init = async () => {
-    const DO = await agent.DieuHanh.getThongKe(moment(this.state.startValue).format('YYYYMMDD'), moment(this.state.endValue).format('YYYYMMDD'), this.state.thauphu)
+    const DO = await agent.DieuHanh.getThongKe(moment(this.state.startValue).format('YYYYMMDD'), moment(this.state.endValue).format('YYYYMMDD'), this.state.khachhang)
     this.setState({
       do: DO
     })
@@ -106,8 +109,6 @@ class Home extends React.Component {
     }
   
     const { startValue, endValue, endOpen } = this.state;
-    
-    console.log(this.state.danhsachthauphu)
     
     return (
       <div>
@@ -131,12 +132,12 @@ class Home extends React.Component {
         
         <Select
           style={{width: 250}}
-          value={this.state.thauphu}
-          onChange={this.changeThauPhu}
+          value={this.state.khachhang}
+          onChange={this.changeKhachHang}
         >
           <Option key="tatca" value="tatca">Tất cả</Option>
-          {this.state.danhsachthauphu.map((el, idx) => {
-            return <Option key={idx} value={'' + el.ma}>{el.ten}</Option>
+          {khachhang.map((el, idx) => {
+            return <Option key={idx} value={el.code}>{el.value}</Option>
           })}
         </Select>
         
@@ -188,7 +189,7 @@ class Home extends React.Component {
                 key="tenkhachhang"
                 render={(text, record) => (
                   <span>
-                    {khachhangObj[record.khachhang].value}
+                    {(khachhangObj[record.khachhang] || {}).value}
                   </span>
                 )}
               />
@@ -282,8 +283,8 @@ class Home extends React.Component {
       [field]: value,
     });
   }
-  changeThauPhu = async (value) => {
-    await this.setState({thauphu: value})
+  changeKhachHang = async (value) => {
+    await this.setState({khachhang: value})
     this.init()
   }
   

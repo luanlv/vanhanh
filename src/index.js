@@ -22,6 +22,7 @@ import HomeDieuHanh from './components/dieuhanh/Home';
 import DieuXe from './components/dieuhanh/DO';
 import PhongBan from './components/nhansu/PhongBan';
 import NhanVien from './components/nhansu/NhanVien';
+import ThuChi from './components/thuquy/Quy';
 
 import DieuHanhDOMenu from './components/dieuhanh/DoMenu';
 import DieuHanhPhuPhi from './components/dieuhanh/ListPhuPhi';
@@ -52,7 +53,8 @@ ReactDOM.render((
           
           
           <Route path="thongke" component={ThongKe} />
-          
+          <Route path="thuchi" component={ThuChi} />
+
           {/*<Route path="it/thauphu" component={ThemThauPhu} />*/}
           {/*<Route path="it/laixe" component={ThemLaiXe} />*/}
           {/*<Route path="it/xe" component={ThemXe} />*/}

@@ -104,7 +104,7 @@ class App extends React.Component {
                 <Menu theme="dark"
                       mode={this.state.mode}
                       selectedKeys={[this.props.name]}
-                      defaultOpenKeys={['lenhdieuxe', 'thongke']}
+                      defaultOpenKeys={['lenhdieuxe', 'thongke', 'thuquy']}
                 >
                   <Menu.Item key="Dashboard">
                     <Link to="/">
@@ -191,22 +191,22 @@ class App extends React.Component {
                   {/*</SubMenu>*/}
   
                   
-                  {/*<SubMenu*/}
-                    {/*key="ketoan"*/}
-                    {/*title={<span><Icon type="idcard" /><span className="nav-text">Kế toán</span></span>}*/}
-                  {/*>*/}
-                    {/*<Menu.Item key="ketoan1">*/}
-                      {/*<Link to="#" >Giá chuyến</Link>*/}
-                    {/*</Menu.Item>*/}
-                  {/*</SubMenu>*/}
+                  <SubMenu
+                    key="thuquy"
+                    title={<span><Icon type="idcard" /><span className="nav-text">Thủ quỹ</span></span>}
+                  >
+                    <Menu.Item key="thuquy1">
+                      <Link to="thuchi" >Thu/Chi</Link>
+                    </Menu.Item>
+                  </SubMenu>
                   
                   
                   <SubMenu
                     key="thongke"
-                    title={<span><Icon type="idcard" /><span className="nav-text">Thống kê</span></span>}
+                    title={<span><Icon type="idcard" /><span className="nav-text">Báo cáo</span></span>}
                   >
                     <Menu.Item key="thongke">
-                      <Link to="/thongke" >Theo ngày/Thầu phụ</Link>
+                      <Link to="/thongke" >Theo ngày/khách hàng</Link>
                     </Menu.Item>
                   
                   </SubMenu>

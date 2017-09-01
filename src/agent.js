@@ -207,7 +207,7 @@ const DieuHanh = {
   getDate: () =>
     requests.get('/date'),
   getThongKe: (start, end, thauphu) =>
-    requests.get(`/dieuhanh/do/thongke?start=${start}&end=${end}&thauphu=${thauphu}`),
+    requests.get(`/dieuhanh/do/thongke?start=${start}&end=${end}&khachhang=${thauphu}`),
 }
 
 
@@ -220,12 +220,22 @@ const NhanSu = {
     requests.get(`/nhansu/phongban/all`),
   tatCaNhanVien: () =>
     requests.get(`/nhansu/nhanvien/all`),
+  tatCaTenNhanVien: () =>
+    requests.get(`/nhansu/nhanvien/allName`),
+}
+
+const ThuQuy = {
+  init: () =>
+  requests.get('/thuquy'),
+  them: data =>
+    requests.post('/thuquy/them', {data}),
 }
 
 export default {
   API_ROOT_SOCKET,
   API_ROOT,
   Articles,
+  ThuQuy,
   Auth,
   Comments,
   Profile,
