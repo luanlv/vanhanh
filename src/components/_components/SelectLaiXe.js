@@ -8,6 +8,7 @@ class CustomSelect extends React.Component {
     return (
       <Select
         disabled={this.props.disabled}
+        defaultValue={this.props.defaultValue}
         showSearch
         style={{width: '100%'}}
         // value={this.props.value}

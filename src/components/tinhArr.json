@@ -439,5 +439,19 @@
     "type": "tinh",
     "name_with_type": "Tỉnh Bắc Kạn",
     "code": "06"
+  },
+  {
+    "name": "Ba Vì",
+    "slug": "ba-vi",
+    "type": "tinh",
+    "name_with_type": "Ba Vì",
+    "code": "201"
+  },
+  {
+    "name": "...",
+    "slug": "chua-phan",
+    "type": "tinh",
+    "name_with_type": "...",
+    "code": "00"
   }
 ]

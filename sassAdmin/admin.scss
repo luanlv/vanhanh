@@ -3,6 +3,11 @@
 @import 'megadraft';
 @import 'custom';
 
+
+.Select-clear {
+  display: none;
+}
+
 .Select-control {
   z-index: 999;
 }

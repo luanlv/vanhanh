@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import agent from '../../agent';
 import {Link} from 'react-router'
 import { connect } from 'react-redux';
@@ -43,10 +44,12 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class Home extends React.Component {
-  
+
   constructor(props){
     super(props)
     this.state = {
+      date: moment(Date.now()).format('YYYYMMDD'),
+      date2: moment(Date.now()).format('YYYYMMDD'),
       init: false,
       visible: false,
       quaydau: false,
@@ -65,47 +68,69 @@ class Home extends React.Component {
       danhsachxe: [],
       xeOBJ: {},
       tinhtrang: -1,
-      socket: io(agent.API_ROOT_SOCKET)
+      edit: false,
+      khachhang: [],
+      khachhangObj: {},
     }
-  
-    // const socket = io(agent.API_ROOT_SOCKET);
-    this.state.socket.on('connect', function(){
-      console.log('connected')
-    });
-    this.state.socket.on('update', function(data){
-      // console.log(data)
-      openNotification(data.mes)
-      this.initDO()
-    }.bind(this));
-    
-    this.state.socket.on('disconnect', function(){
-      console.log('on disconect')
-    });
-    
-    
-    this.init()
+    console.log(moment(Date.now()).format('YYYYMMDD'))
+
+    this.changeDate = this.changeDate.bind(this)
+    this.changeDate2 = this.changeDate2.bind(this)
+    this.chinhsua = this.chinhsua.bind(this)
+    this.onUpdate = this.onUpdate.bind(this
+    )
+    this.init(this.state.date, this.state.date2)
   }
-  
-  componentWillMount = () => {
-  
+
+  onUpdate = function(data){
+  // console.log(data)
+    let that = this
+    openNotification(data.mes)
+    that.initDO(that.state.date, that.state.date2)
   }
-  
-  initDO = async () => {
-    const DOs = await agent.DieuHanh.getDOs();
+
+  componentDidMount(){
+    this.context.socket.on('update', this.onUpdate);
+  }
+
+
+  componentWillMount = async () => {
+    this.context.socket.off('update', this.onUpdate);
+    let that = this
+    const khachhang = await agent.DieuHanh.khachHang()
+    let khachhangObj = {}
+    if(khachhang){
+      khachhang.forEach(el => {
+        khachhangObj[el.code] = el
+      })
+    }
+
+    this.setState({
+      khachhang: khachhang,
+      khachhangObj: khachhangObj,
+      init: true
+    })
+
+  }
+
+  initDO = async (date) => {
+    console.log('init DO')
+    const DOs = await agent.DieuHanh.getDOs(date);
     this.setState({
       DOs: DOs,
     })
   }
-  
-  init = async () => {
+
+  init = async (date) => {
     let that = this;
     try {
       // const date = await agent.DieuHanh.getDate();
-      const DOs = await agent.DieuHanh.getDOs();
+      const DOs = await agent.DieuHanh.getDOs(date);
       const danhsachthauphu = await agent.DieuHanh.danhSachThauPhu();
       const danhsachlaixe = await agent.DieuHanh.danhsachlaixe()
       const danhsachxe = await agent.DieuHanh.danhsachxe()
       // console.log(date)
+      console.log(danhsachthauphu)
       if (DOs) {
         let tp = {}
         danhsachthauphu.forEach(el => {
@@ -115,7 +140,7 @@ class Home extends React.Component {
         danhsachlaixe.forEach(el => {
           lx[el.ma] = el
         })
-        lx[999] = {ten : 'Lái xe thầu phụ'}
+        lx[999] = {ten : 'thầu phụ'}
         this.setState({
           // date: date.date,
           DOs: DOs,
@@ -132,19 +157,43 @@ class Home extends React.Component {
         loadingText: '' + e
       })
     }
-    
+
+  }
+
+  changeDate = async (value) => {
+
+    this.setState(prev => {
+      return {
+        ...prev,
+        date: moment(value).format('YYYYMMDD')
+      }}
+    )
+
+    this.initDO(moment(value).format('YYYYMMDD'), this.state.date2)
+  }
+
+  changeDate2 = async (value) => {
+
+    this.setState(prev => {
+      return {
+        ...prev,
+        date2: moment(value).format('YYYYMMDD')
+      }}
+    )
+
+    this.initDO(this.state.date, moment(value).format('YYYYMMDD'))
   }
 
   render() {
     const role = this.props.user.role;
-    
+
     let lenhcho = []
     let chuanhan = []
     let danhan = []
     let hoanthanh = []
     let dieurong = []
     let huy = []
-    
+
     this.state.DOs.map((el, index) => {
       if(el.laixe === -1 || el.tinhtrang === 0){
         lenhcho.push(el)
@@ -160,7 +209,7 @@ class Home extends React.Component {
         huy.push(el)
       }
     })
-    
+
     if(!this.state.init){
       return (
         <div>
@@ -168,312 +217,457 @@ class Home extends React.Component {
         </div>
       )
     }
-    
+    console.log(this.state.danhsachthauphu)
+    console.log(this.state.danhsachthauphuObj)
     return (
       <div className="home-page" style={{marginTop: 10, padding: 10}}>
-        
-        {/*<Button*/}
-          {/*onClick={() => {*/}
-            {/*this.state.socket.emit('ferret', 'tobi', function (data) {*/}
-              {/*console.log(data); // data will be 'woot'*/}
-            {/*});*/}
-          {/*}}*/}
-        {/*>button</Button>*/}
-        
-        <h2 style={{textAlign: 'center', color: 'red'}}>{moment(Date.now()).format('DD-MM-YYYY')}</h2>
+        <div style={{float: 'right', fontSize: 12}}>Ngày hiện tại: <b style={{color: 'red'}}>{moment(Date.now()).format('DD-MM-YYYY')}</b></div>
+        <h2 style={{textAlign: 'center', color: 'red'}}>{moment(this.state.date).format('DD-MM-YYYY')}</h2>
         <span style={{marginRight: 5}}>
           <Button type="primary" onClick={this.showModal1}>COLOMBUS</Button>
         </span>
-        {/*<span style={{marginRight: 5}}>*/}
-          {/*<Button type="danger" onClick={this.showModal2}>COLOMBUS (quay đầu)</Button>*/}
-        {/*</span>*/}
+
         <span style={{marginRight: 5}}>
           <Button type="primary" onClick={this.thauphu}>Thầu phụ</Button>
         </span>
-        {/*<span style={{marginRight: 5}}>*/}
-          {/*<Button type="danger" onClick={this.thauphuquaydau}>Thầu phụ (quay đầu)</Button>*/}
-        {/*</span>*/}
+        <span style={{float: 'right'}}>
+          <DatePicker format="DD-MM-YYYY"
+                  onChange={this.changeDate}
+                  value={moment(this.state.date, 'YYYYMMDD')}
+          />
+        </span>
+
+
         <hr
           style={{margin: 10}}
         />
-        {/*// modal*/}
+
+
+
         <Tabs
           defaultActiveKey="1"
           tabPosition={"top"}
         >
-          <TabPane tab={"Lệnh chờ " + "(" + lenhcho.length + ")"} key="1">
+          <TabPane tab={(<span>Lệnh chờ (<b style={{color: lenhcho.length > 0 ? 'red': ''}}>{lenhcho.length}</b>)</span>)} key="1">
             {lenhcho.map((el, index) => {
-              console.log(el.createAt)
               return (
                 <div key={index}
                   className="shadow"
-                  style={{borderRadius: 3, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer'}}
-                  onClick={() => this.chonLaiXe(el)}
+                  style={{borderRadius: 3, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer'}}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Mã DO: <b style={{color: 'red'}}>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b style={{color: 'red'}}>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12}>
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                        {el.diemtrahang.map((diemtra, index2) => {
+                          return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black" }}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                        })}
+                    </Col>
+                  </Row>
+
+                  <div>
+
+                    <Button type="primary"
+                            onClick={() => this.chonLaiXe(el)}
+                    >Chọn lái xe</Button>
+
+                    <span style={{margin: '0 5px'}}>|</span>
+
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.xoaLenh(el._id)
+                        .then(res => {
+                          message.success("Thành công")
+                          this.init(this.state.date, this.state.date2)
+                        })
+                        .catch(err => {
+                          message.error("That bai")
+                        })
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Xóa lệnh</Button>
+                    </Popconfirm>
+
+                  </div>
                 </div>
               )
             })}
           </TabPane>
-          <TabPane tab={"Chưa nhận " + "(" + chuanhan.length + ")"} key="2">
+          <TabPane tab={(<span>Chưa nhận (<b style={{color: chuanhan.length > 0 ? 'red': ''}}>{chuanhan.length}</b>)</span>)} key="2">
             {chuanhan.map((el, index) => {
               return (
                 <div key={index}
-                     style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer'}}
+                  style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer'}}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Lái xe & xe: <b style={{color: el.thauphu === 101 ? "blue":"green" }}>{(this.state.laixeOBJ[el.laixe] && this.state.laixeOBJ[el.laixe].ten)}</b> - <b style={{color: 'red'}}>{el.xe}</b>
-                  <br/>
-                  Mã DO: <b>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Lái xe: <b>{el.laixe}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
-                  <Popconfirm title="Xác nhận?" onConfirm={() => {
-                    agent.DieuHanh.nhanLenhThay(el)
-                      .then(res => {
-                      message.success("Thành công")
-                      // this.context.router.replace('/dieuhanh');
-                        this.init()
-                    })
-                      .catch(err => {
-                        message.error("That bai")
-                      })
-                  }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                    <Button type="primary">Nhận lệnh</Button>
-                  </Popconfirm>
-                    <span style={{margin: '0 5px'}}>|</span>
-                  <Popconfirm title="Xác nhận?" onConfirm={() => {
-                    agent.DieuHanh.huyLenhThay(el)
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12} >
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                      {el.diemtrahang.map((diemtra, index2) => {
+                        return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black"}}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                      })}
+                    </Col>
+                  </Row>
+
+                  <div>
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.nhanLenhThay(el)
                       .then(res => {
                         message.success("Thành công")
                         // this.context.router.replace('/dieuhanh');
-                        this.init()
+                        this.init(this.state.date, this.state.date2)
                       })
                       .catch(err => {
                         message.error("That bai")
                       })
-                  }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                    <Button type="danger">Hủy lệnh</Button>
-                  </Popconfirm>
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="primary">Nhận lệnh</Button>
+                    </Popconfirm>
+
+                    <span style={{margin: '0 5px'}}>|</span>
+
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.huyLenhThay(el)
+                      .then(res => {
+                        message.success("Thành công")
+                          // this.context.router.replace('/dieuhanh');
+                        this.init(this.state.date, this.state.date2)
+                      })
+                      .catch(err => {
+                        message.error("That bai")
+                      })
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Hủy lệnh</Button>
+                    </Popconfirm>
+
+                    <span style={{margin: '0 5px'}}>|</span>
+
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa</Button>
+                  </div>
                 </div>
               )
             })}
           </TabPane>
-          <TabPane tab={"Đã nhận " + "(" + danhan.length + ")"} key="3">
+
+          <TabPane tab={(<span>Đã nhận (<b style={{color: danhan.length > 0 ? 'red': ''}}>{danhan.length}</b>)</span>)} key="3">
             {danhan.map((el, index) => {
               return (
                 <div key={index}
-                     style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer'}}
+                  style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer'}}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Lái xe & xe: <b style={{color: el.thauphu === 101 ? "blue":"green" }}>{(this.state.laixeOBJ[el.laixe] && this.state.laixeOBJ[el.laixe].ten)}</b> - <b style={{color: 'red'}}>{el.xe}</b>
-                  <br/>
-                  Mã DO: <b>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Lái xe: <b>{el.laixe}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
-                 
-                 
-                  <Popconfirm title="Xác nhận?" onConfirm={() => {
-                    agent.DieuHanh.daGiaoHang(el)
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12} >
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                      {el.diemtrahang.map((diemtra, index2) => {
+                        return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black"}}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                      })}
+                    </Col>
+                  </Row>
+
+                  <div>
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.daGiaoHang(el)
                       .then(res => {
                         message.success("Thành công")
-                        // this.context.router.replace('/dieuhanh');
-                        this.init()
+                          // this.context.router.replace('/dieuhanh');
+                        this.init(this.state.date, this.state.date2)
                       })
                       .catch(err => {
                         message.error("That bai")
                       })
-                  }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                    <Button type="primary">Đã giao hàng</Button>
-                  </Popconfirm>
-                 
-                 
-                  <span style={{margin: '0 5px'}}>|</span>
-                  <Popconfirm title="Xác nhận?" onConfirm={() => {
-                    agent.DieuHanh.huyChuyen(el)
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="primary">Đã giao hàng</Button>
+                    </Popconfirm>
+
+
+                    <span style={{margin: '0 5px'}}>|</span>
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.huyChuyen(el)
                       .then(res => {
                         message.success("Thành công")
-                        // this.context.router.replace('/dieuhanh');
-                        this.init()
+                          // this.context.router.replace('/dieuhanh');
+                        this.init(this.state.date, this.state.date2)
                       })
                       .catch(err => {
                         message.error("That bai")
                       })
-                  }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                    <Button type="danger">Điều rỗng</Button>
-                  </Popconfirm>
-  
-  
-  
-                  {!el.quaydau && el.lenhtruoc === 0 && <span style={{margin: '0 5px'}}>|</span>}
-                  {!el.quaydau && el.lenhtruoc === 0 && <Button type="danger"
-                    onClick={() => this.lenhquaydau(el)}
-                  >Tạo lệnh quay đầu</Button>}
-                  
-                  <span style={{margin: '0 5px'}}>|</span>
-                  <Popconfirm title="Xác nhận?" onConfirm={() => {
-                    agent.DieuHanh.huyChuyen2(el)
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Điều rỗng</Button>
+                    </Popconfirm>
+
+
+
+                    {!el.quaydau && el.lenhtruoc === 0 && <span style={{margin: '0 5px'}}>|</span>}
+                    {!el.quaydau && el.lenhtruoc === 0 && <Button type="danger"
+                      onClick={() => this.lenhquaydau(el)}
+                                                          >Tạo lệnh quay đầu</Button>}
+
+                    <span style={{margin: '0 5px'}}>|</span>
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.huyChuyen2(el)
                       .then(res => {
                         message.success("Thành công")
-                        // this.context.router.replace('/dieuhanh');
-                        this.init()
+                          // this.context.router.replace('/dieuhanh');
+                        this.init(this.state.date, this.state.date2)
                       })
                       .catch(err => {
                         message.error("That bai")
                       })
-                  }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                    <Button type="ghost">Hủy chuyến</Button>
-                  </Popconfirm>
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="ghost">Hủy chuyến</Button>
+                    </Popconfirm>
+
+                    <span style={{margin: '0 5px'}}>|</span>
+
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa</Button>
+                  </div>
+
                 </div>
               )
             })}
           </TabPane>
-          <TabPane tab={"Hoàn thành " + "(" + hoanthanh.length + ")"} key="4">
+          <TabPane tab={(<span>Hoàn thành (<b style={{color: hoanthanh.length > 0 ? 'red': ''}}>{hoanthanh.length}</b>)</span>)} key="4">
             {hoanthanh.map((el, index) => {
               return (
                 <div key={index}
-                     style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer', background: el.tinhtrang === 5 ? 'rgba(100, 100, 100, 0.3)': '' }}
+                  style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer', background: el.tinhtrang === 5 ? 'rgba(100, 100, 100, 0.3)': '' }}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Lái xe & xe: <b style={{color: el.thauphu === 101 ? "blue":"green" }}>{(this.state.laixeOBJ[el.laixe] && this.state.laixeOBJ[el.laixe].ten)}</b> - <b style={{color: 'red'}}>{el.xe}</b>
-                  <br/>
-                  Mã DO: <b>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Lái xe: <b>{el.laixe}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
-                  {el.tienthu > 0 && <div>Thu hộ: <b>{(el.tienthu || 0).toLocaleString()} đ</b> </div>}
-                  {el.tienphatsinh > 0 && <div>
-                    Tiền phát sinh: <b>{(el.tienphatsinh || 0).toLocaleString()} đ</b>
-                    <br/>
-                    Lý do: <b>{el.lydo}</b>
-                  </div>}
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12} >
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                      {el.diemtrahang.map((diemtra, index2) => {
+                        return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black"}}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                      })}
+                    </Col>
+                  </Row>
+
+                  <div>
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa</Button>
+                  </div>
                 </div>
               )
             })}
           </TabPane>
-          
-          <TabPane tab={"Điều rỗng " + "(" + dieurong.length + ")"} key="5">
+
+          <TabPane tab={(<span>Điều rỗng (<b style={{color: dieurong.length > 0 ? 'red': ''}}>{dieurong.length}</b>)</span>)} key="5">
             {dieurong.map((el, index) => {
               return (
                 <div key={index}
-                     style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer'}}
+                  style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer'}}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Lái xe & xe: <b style={{color: el.thauphu === 101 ? "blue":"green" }}>{(this.state.laixeOBJ[el.laixe] && this.state.laixeOBJ[el.laixe].ten)}</b> - <b style={{color: 'red'}}>{el.xe}</b>
-                  <br/>
-                  Mã DO: <b>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Lái xe: <b>{el.laixe}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12} >
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                      {el.diemtrahang.map((diemtra, index2) => {
+                        return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black"}}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                      })}
+                    </Col>
+                  </Row>
+
+                  <div>
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa</Button>
+                  </div>
                 </div>
               )
             })}
           </TabPane>
-          
-          <TabPane tab={"Đã hủy" + "(" + huy.length + ")"} key="6">
+          <TabPane tab={(<span>Đã hủy (<b style={{color: huy.length > 0 ? 'red': ''}}>{huy.length}</b>)</span>)} key="6">
             {huy.map((el, index) => {
               return (
                 <div key={index}
-                     style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 16, padding: 5, cursor: 'pointer'}}
+                  style={{borderRadius: 5, border: '1px solid', marginBottom: 10, borderColor: el.quaydau ? "orange": "#ddd", fontSize: 14, padding: 5, cursor: 'pointer'}}
                 >
-                  {el.thauphu === 101 ? (<b style={{color: "blue" }}>Lái Xe COLOMBUS</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}>{this.state.thauphuOBJ[el.thauphu].ten}</b></span>)}
-                  <br/>
-                  Lái xe & xe: <b style={{color: el.thauphu === 101 ? "blue":"green" }}>{(this.state.laixeOBJ[el.laixe] && this.state.laixeOBJ[el.laixe].ten)}</b> - <b style={{color: 'red'}}>{el.xe}</b>
-                  <br/>
-                  Mã DO: <b>{el._id}</b>
-                  <br/>
-                  Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
-                  <br/>
-                  Lái xe: <b>{el.laixe}</b>
-                  <br/>
-                  Điểm xuất phát: <b>{el.diemxuatphat.name}</b>
-                  <br/>
-                  Điểm trả hàng: <b>{el.diemtrahang.length}</b> điểm
-                  {el.diemtrahang.map((diemtra, index2) => {
-                    return <span key={index2} style={{paddingLeft: 20}}><b>[{index2 + 1}] {diemtra.name}</b></span>
-                  })}
-                  <br/>
-                  Trọng tải: <b>{el.trongtai}</b> Tấn
-                  <br/>
+
+                  <Row>
+                    <Col span={12}>
+                      {el.thauphu === 101 ? (<b style={{color: "blue" }}>COLOMBUS {el.laixe === null || el.laixe < 0 ? "(Chưa phân công)": (<b style={{color: 'red'}}> ( {this.state.laixeOBJ[el.laixe].ten} - {el.xe} )</b>)}</b>) : (<span>Thầu phụ: <b style={{color: 'green'}}> {this.state.thauphuOBJ[el.thauphu].ten} ( xe: <span style={{color: 'red'}}>{el.xe}</span>)</b></span>)}
+                      <br/>
+                      Mã DO: <b style={{color: 'red'}}>{el._id}</b>
+                      <br/>
+                      Tên khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[el.khachhang].value}</b>
+                      <br/>
+                      Tạo lúc: <b style={{color: 'red'}}>{moment(el.createAt).format("HH:mm ngày DD/MM/YYYY")}</b>
+                      <br/>
+                      Ngày: <b style={{color: 'red'}}>{moment(el.date, 'YYYYMMDD').format("DD/MM/YYYY")}</b>
+                      <br/>
+                      Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
+                      <div style={{padding: 5}}>
+                        {el.diemxuatphat.map((p, index) => {
+                          console.log(p)
+                          return (
+                            <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
+                          )
+                        })}
+                      </div>
+                      Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
+                      <br/>
+                      <div>
+                        Ghi chú: <b>{el.ghichu}</b>
+                      </div>
+                    </Col>
+                    <Col span={12} >
+                      Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
+                      {el.diemtrahang.map((diemtra, index2) => {
+                        return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black"}}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
+                      })}
+                    </Col>
+                  </Row>
+
+                  <div>
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa</Button>
+                  </div>
                 </div>
               )
             })}
           </TabPane>
-          
+
         </Tabs>
-  
+
         <Modal
-          width="800"
+          width="1000"
           className={this.state.quaydau && "chuyenquaydau"}
           title={"Lệnh điều xe " + (this.state.quaydau ? "quay đầu" : "mới")}
           visible={this.state.visible}
           maskClosable={false}
           onOk={this.hideModal}
           onCancel={this.hideModal}
-          okText="Đóng"
+          okText="."
           cancelText="."
         >
           {this.state.visible && this.state.tinhtrang === -1 &&
@@ -482,88 +676,114 @@ class Home extends React.Component {
               danhsachlaixe={this.state.danhsachlaixe}
               success={() => {
                 this.hideModal()
-                this.init()
+                this.init(this.state.date, this.state.date2)
               }}
               thauphu={this.state.thauphu}
               danhsachthauphu={this.state.danhsachthauphu}
               // date={this.state.date}
               tinhtrang={this.state.tinhtrang}
               DOTruoc={this.state.DOTruoc}
+              edit={this.state.edit}
+              date={this.state.date}
           />}
-  
-          {this.state.visible && this.state.tinhtrang === 0 &&
+
+          {this.state.visible && this.state.tinhtrang >= 0 &&
           <DO danhsachxe={this.state.danhsachxe}
               danhsachlaixe={this.state.danhsachlaixe}
               danhsachthauphu={this.state.danhsachthauphu}
               success={() => {
                 this.hideModal()
-                this.init()
+                this.init(this.state.date, this.state.date2)
               }}
               data={this.state.data}
               tinhtrang={this.state.tinhtrang}
+              edit={this.state.edit}
+              date={this.state.date}
           />}
-          
+
         </Modal>
       </div>
     )
   }
-  
+
   showModal1 = () => {
     this.setState({
       visible: true,
       quaydau: false,
       thauphu: false,
       tinhtrang: -1,
-      action: 'them'
+      action: 'them',
+      edit: false
     });
   }
-  
+
   lenhquaydau = (el) => {
     this.setState({
       visible: true,
       quaydau: true,
       thauphu: el.thauphu !== 101,
       tinhtrang: -1,
-      DOTruoc: el
+      DOTruoc: el,
+      edit: false
     });
   }
-  
+
   thauphu = () => {
     this.setState({
       visible: true,
       quaydau: false,
       thauphu: true,
       tinhtrang: -1,
-      action: 'them'
+      action: 'them',
+      edit: false
     });
   }
-  
+
   thauphuquaydau = () => {
     this.setState({
       visible: true,
       quaydau: true,
       thauphu: true,
       tinhtrang: -1,
-      action: 'them'
+      action: 'them',
+      edit: false
     });
   }
-  
+
   chonLaiXe = (data) => {
+    this.setState({
+      visible: true,
+      data: data,
+      tinhtrang: 0,
+      edit: false
+    });
+  }
+
+  chinhsua = (data) => {
+    console.log(data)
     this.setState({
       visible: true,
       // quaydau: true,
       // thauphu: true,
+      tinhtrang: 6,
       data: data,
-      tinhtrang: 0,
+      edit: true
     });
   }
-  
+
   hideModal = () => {
     this.setState({
       visible: false,
       data: null
     });
   }
+
 }
+
+Home.contextTypes = {
+  router: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired
+};
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

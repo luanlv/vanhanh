@@ -18,6 +18,7 @@ import ThemAutoFill from './components/it/AutoFill';
 
 import Home from './components/dashboard/Home';
 import ThongKe from './components/dieuhanh/ThongKe';
+import BieuDo from './components/dieuhanh/BieuDo';
 import HomeDieuHanh from './components/dieuhanh/Home';
 import DieuXe from './components/dieuhanh/DO';
 import PhongBan from './components/nhansu/PhongBan';
@@ -53,6 +54,7 @@ ReactDOM.render((
           
           
           <Route path="thongke" component={ThongKe} />
+          <Route path="bieudo" component={BieuDo} />
           <Route path="thuchi" component={ThuChi} />
 
           {/*<Route path="it/thauphu" component={ThemThauPhu} />*/}

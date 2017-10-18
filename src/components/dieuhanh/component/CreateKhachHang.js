@@ -5,15 +5,14 @@ import {bindAll} from 'lodash'
 import agent from '../../../agent'
 import tinhObj from '../../tinhObj.json'
 
-class CreatePlace extends React.Component {
+class CreateKhachHang extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      ma: Math.random().toString(36).substring(5),
       visible: false,
-      tinh: "01"
+
     }
-    bindAll(this, 'changeTinh', 'changeMaDiem', 'changeTenDiem')
+    bindAll(this, 'changeCode', 'changeValue')
   }
   
   
@@ -24,16 +23,15 @@ class CreatePlace extends React.Component {
   }
   handleOk = (e) => {
     let that = this;
-    if(this.state.ten && this.state.ten.length > 0 && this.state.ma && this.state.ma.length > 0 && this.state.tinh && this.state.tinh.length > 0){
-      agent.DieuHanh.themDiaDiem(
+    if(this.state.value && this.state.value.length > 0 && this.state.code && this.state.code.length > 0 ){
+      agent.DieuHanh.themKhachHang(
         {
-          name: this.state.ten,
-          code: this.state.ma,
-          tinh: tinhObj[this.state.tinh]
+          code: this.state.code,
+          value: this.state.value,
         }
       ).then(res => {
-        if(that.props.newOK){
-           that.props.newOK(res)
+        if(that.props.handleOk){
+           that.props.handleOk(res)
         }
         this.setState({
           visible: false,
@@ -52,39 +50,34 @@ class CreatePlace extends React.Component {
     });
   }
   
-  changeMaDiem(e){
-    this.setState({ma: e.target.value})
+  changeCode(e){
+    this.setState({code: e.target.value})
   }
   
-  changeTenDiem(e){
-    this.setState({ten: e.target.value})
+  changeValue(e){
+    this.setState({value: e.target.value})
   }
-  
-  changeTinh (value) {
-    // console.log(value)
-    this.setState({tinh: value})
-  }
+
   render() {
     return (
       <div>
         <Button type="primary" style={{float: 'right'}} onClick={this.showModal}>Thêm mới</Button>
         <Modal
-          title="Thêm địa điểm mới"
+          title="Thêm khách hàng mới"
           okText="Thêm mới"
           cancelText="Hủy"
           visible={this.state.visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          Mã điểm:
+          Mã khách hàng:
           <Input
-            value={this.state.ma}
-            onChange={this.changeMaDiem}
+            onChange={this.changeCode}
           />
           <br/>
-          Tên điểm:
+          Tên khách hàng:
           <Input
-            onChange={this.changeTenDiem}
+            onChange={this.changeValue}
           />
           {/*<br/>*/}
           {/*Tỉnh:*/}
@@ -97,4 +90,4 @@ class CreatePlace extends React.Component {
   }
 }
 
-export default CreatePlace
+export default CreateKhachHang

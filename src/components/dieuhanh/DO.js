@@ -33,10 +33,14 @@ import SelectPlace from './component/SelectPlace'
 import 'react-select/dist/react-select.css';
 import Tinh from './component/Tinh'
 import tinhObj from '../tinhObj.json'
+import CreateKhachHang from './component/CreateKhachHang'
+import CreateThauPhu from './component/CreateThauPhu'
 
 const Option = Select.Option;
 const Promise = global.Promise;
 const confirm = Modal.confirm;
+const { TextArea } = Input;
+
 
 
 
@@ -69,7 +73,6 @@ class DOPage extends React.Component {
 
   constructor(props) {
     super(props)
-    
     let madoitruong = intersection(props.user.role, [101]).length > 0 ? null : props.user.ma
     
     // console.log(props.user.ma)
@@ -87,7 +90,7 @@ class DOPage extends React.Component {
     // const nguoiyeucau = await agent.DieuHanh.nguoiyeucau()
     
     if(props.quaydau){
-      console.log(props.DOTruoc)
+      // console.log(props.DOTruoc)
     }
     
     let laixeObj = {}
@@ -97,15 +100,10 @@ class DOPage extends React.Component {
       })
       laixeObj[999] = {ma: 999, ten: 'Lái Xe Thầu Phụ'}
     }
-    let khachhangObj = {}
-    if(khachhang){
-      khachhang.forEach(el => {
-        khachhangObj[el.code] = el
-      })
-    }
-    
+
+    let dongdo = [{"search":"kho dong do kho dong do","__v":0,"tinh":{"name":"Hà Nội","slug":"ha-noi","type":"thanh-pho","name_with_type":"Thành phố Hà Nội","code":"01"},"code":"Kho Đông Đô","name":"Kho Đông Đô","_id":"59c326b820a5ea164e60b978"}]
     this.state = {
-      data: props.tinhtrang >= 0 ? data : {
+      data: (props.tinhtrang >= 0 || props.edit === true) ? data : {
         lenhtruoc: props.quaydau ? props.DOTruoc._id : 0,
         doitruong:  madoitruong,
         quaydau: this.props.quaydau || false,
@@ -115,12 +113,18 @@ class DOPage extends React.Component {
         sokm: 50,
         sodiem: 1,
         thauphu: props.thauphu ? (props.quaydau ? props.DOTruoc.thauphu : 102) : 101,
-        khachhang: props.quaydau ? props.DOTruoc.khachhang : '',
-        nguoiyeucau: props.quaydau ? props.DOTruoc.nguoiyeucau : '',
+        khachhang: props.quaydau ? props.DOTruoc.khachhang : props.user.ma === 1013 ? '106': '',
+        nguoiyeucau: props.quaydau ? props.DOTruoc.nguoiyeucau : props.user.ma === 1013 ? '105' : '',
         xe: props.quaydau ? props.DOTruoc.xe : '',
         laixe: props.quaydau ? props.DOTruoc.laixe : '',
+        tinhxuatphat: tinhObj["01"],
         tinhtrahang: tinhObj["01"],
-        date: parseInt(moment(Date.now()).add(1, 'days').format('YYYYMMDD')),
+        ghichu: '',
+        date: parseInt(props.date),
+        diemxuatphat: props.user.ma === 1013 ? dongdo : [],
+        diemtrahang: [],
+        diembatdau: 0,
+        diemxanhat: 0,
       },
       init: false,
       khachhang: [],
@@ -134,24 +138,85 @@ class DOPage extends React.Component {
       danhsachxe: props.danhsachxe.map(el => {return el.bks}),
       xeOBJ: obj,
       laixeObj: laixeObj,
-      khachhangObj: khachhangObj,
+      khachhangObj: {},
       select: []
     }
-    console.log(this.state)
-    bindAll(this, 'changeLaiXe', 'changeTinh', 'changeDiemTraHang', 'changeDiemXuatPhat', 'changeNguoiYeuCau', 'changeKhachHang')
+
+    // console.log(this.state.data.date)
+    // console.log(this.state.date)
+
+
+    bindAll(this, 'initThauPhu', 'changeDiemxanhat', 'changeDiembatdau', 'initKhachHang', 'changeLaiXe', 'changeTinhXuatPhat', 'changeTinh', 'changeDiemTraHang', 'changeDiemXuatPhat', 'changeNguoiYeuCau', 'changeKhachHang')
+
   }
+
 
   componentWillMount = async () => {
     let that = this
- 
-    // const autofill = await agent.DieuHanh.autofill()
-    // console.log(valueByField('khachhang', autofill))
-    // const autofillPlace = await agent.DieuHanh.autofillPlace()
+    const khachhang = await agent.DieuHanh.khachHang()
+    let khachhangObj = {}
+    if(khachhang){
+      khachhang.forEach(el => {
+        khachhangObj[el.code] = el
+      })
+    }
+    const thauphu = await agent.DieuHanh.danhSachThauPhu()
+    let thauphuObj = {}
+    if (thauphu) {
+      thauphu.forEach(el => {
+        thauphuObj[el.ma] = el
+      })
+    }
     this.setState({
       khachhang: khachhang,
       nguoiyeucau: nguoiyeucau,
       // diemxuatphat: autofillPlace,
+      khachhangObj: khachhangObj,
+      thauphu: thauphu,
+      thauphuObj: thauphuObj,
       init: true
+    })
+  }
+
+
+  initThauPhu = async (el) => {
+    let that = this
+    const thauphu = await agent.DieuHanh.danhSachThauPhu()
+    let thauphuObj = {}
+    if (thauphu) {
+      thauphu.forEach(el => {
+        thauphuObj[el.ma] = el
+      })
+    }
+    this.setState({
+      thauphu: thauphu,
+      thauphuObj: thauphuObj,
+    }, () => {
+      if(el){
+        that.setState(prev => { return {
+          ...prev,
+          data: {
+            ...prev.data,
+            thauphu: el.ma
+          }
+        }})
+      }
+    })
+  }
+
+    initKhachHang = async () => {
+    let that = this
+    const khachhang = await agent.DieuHanh.khachHang()
+    let khachhangObj = {}
+    if(khachhang){
+      khachhang.forEach(el => {
+        khachhangObj[el.code] = el
+      })
+    }
+
+    this.setState({
+      khachhang: khachhang,
+      khachhangObj: khachhangObj,
     })
   }
 
@@ -170,6 +235,7 @@ class DOPage extends React.Component {
       }
     })
   }
+
   changeNguoiYeuCau(value) {
     this.setState(prev => {
       return {
@@ -205,7 +271,19 @@ class DOPage extends React.Component {
       })
     }
   }
-  
+
+  changeTinhXuatPhat(value){
+    this.setState(prev => {
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          tinhxuatphat: tinhObj[value]
+        }
+      }
+    })
+  }
+
   changeTinh(value){
     this.setState(prev => {
       return {
@@ -243,6 +321,30 @@ class DOPage extends React.Component {
   }
 
 
+  changeDiemxanhat(e){
+    this.setState(prev => {
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          diemxanhat: parseInt(e)
+        }
+      }
+    })
+  }
+
+  changeDiembatdau(e){
+    this.setState(prev => {
+      return {
+        ...prev,
+        data: {
+          ...prev.data,
+          diembatdau: parseInt(e)
+        }
+      }
+    })
+  }
+
   render() {
     if(!this.state.init) return (
       <div style={{textAlign: 'center', paddingTop: 50}}>
@@ -253,20 +355,30 @@ class DOPage extends React.Component {
     const diadiem = [];
     this.state.diemxuatphat.map((el,key) => {
       diadiem.push(<Option key={el.code}>{el.name + ' - ' + el.code}</Option>);
-      // diadiem.push(<Option key={el.code}>{el.name + ' - ' + el.code + ' | ' + el.tinh.name}</Option>);
     })
     const role = this.props.user.role
+
+    let diemxanhatOption = []
+
+    {this.state.data.diemtrahang.map((el, index) => {
+      diemxanhatOption.push(<Option key={'' + index} value={'' + index}>{el.name}</Option>)
+    })}
+
+    let diembatdauOption = []
+    {this.state.data.diemxuatphat.map((el, index) => {
+      diembatdauOption.push(<Option key={'' + index} value={'' + index}>{el.name}</Option>)
+    })}
     return (
       <div className="home-page" style={{marginTop: 0 }}>
         <div style={{padding: 5}}>
           <h2 style={{textAlign: 'center', fontSize: 24}}>Lệnh điều xe {this.state.data.quaydau && "(quay đầu)"}</h2>
           {this.state.init && <div>
-            {this.props.tinhtrang >= 0 && <Row>
+            {<Row>
               <b style={{fontSize: 16}}>Ngày: </b>
               <DatePicker format="DD-MM-YYYY"
-                          disabledDate={(current) => {
-                             return current && current.valueOf() < moment(Date.now()).add(-1, 'days');
-                          }}
+                          // disabledDate={(current) => {
+                          //    return current && current.valueOf() < moment(Date.now()).add(-1, 'days');
+                          // }}
                           onChange={(value) => {this.setState(prev => {
                             return {
                               ...prev,
@@ -276,7 +388,7 @@ class DOPage extends React.Component {
                               }
                             }
                           })}}
-                          defaultValue={moment(Date.now())}
+                          value={moment(this.state.data.date, 'YYYYMMDD')}
               />
             </Row>}
             
@@ -290,18 +402,21 @@ class DOPage extends React.Component {
             
             {this.props.tinhtrang < 0 && intersection(role, [101]).length > 0 && <Row>
               <b style={{fontSize: 16}}>Đội trưởng:</b>
-              <Select style={{ width: '100%' }}
-                      onChange={(val) => {
-                        this.setState(prev => {
-                          return {
-                            ...prev,
-                            data: {
-                              ...prev.data,
-                              doitruong: parseInt(val)
-                            }
-                          }
-                        })
-                      }}
+              <Select
+                showSearch
+                style={{ width: '100%' }}
+                onChange={(val) => {
+                  this.setState(prev => {
+                    return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        doitruong: parseInt(val)
+                      }
+                    }
+                  })
+                }}
+                filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
               >
                 <Option value={'' + 1012}>Trần Văn Mỹ</Option>
                 <Option value={'' + 1013}>Trần Ngọc Chỉnh</Option>
@@ -309,27 +424,37 @@ class DOPage extends React.Component {
             </Row>
               }
               
-            {this.props.tinhtrang < 0 && this.props.thauphu && !this.props.quaydau && <Row>
+            {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row>
               <b style={{fontSize: 16}}>Thầu phụ: </b>
-              <Select style={{ width: '100%' }}
-                      defaultValue={'' + this.state.data.thauphu}
-                      onChange={(val) => {
-                        this.setState(prev => {
-                          return {
-                            ...prev,
-                            data: {
-                              ...prev.data,
-                              thauphu: parseInt(val)
-                            }
-                          }
-                        })
-                      }}
+              <Select
+                showSearch
+                style={{ width: '100%' }}
+                value={'' + this.state.data.thauphu}
+                onChange={(val) => {
+                this.setState(prev => {
+                  return {
+                    ...prev,
+                    data: {
+                      ...prev.data,
+                      thauphu: parseInt(val)
+                    }
+                  }
+                })
+              }}
+                filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
               >
-                {this.props.danhsachthauphu.filter((el) => {return el.ma !== 101}).map((el, index) => {
+                {this.state.thauphu.filter((el) => {return el.ma !== 101}).map((el, index) => {
                   return <Option key={el.ma + index} value={'' + el.ma}>{el.ten}</Option>
                 })}
                 
               </Select>
+              <div>
+                <CreateThauPhu
+                  handleOk={(el) => {
+                    this.initThauPhu(el)
+                  }}
+                />
+              </div>
             </Row>}
             
             { this.props.tinhtrang < 0 && (this.state.data.thauphu === 999) && <Row>
@@ -358,43 +483,68 @@ class DOPage extends React.Component {
             </Row>
             }
             
-            {this.props.tinhtrang >=0 && this.state.data.thauphu === 101 &&<Row>
+            {this.props.tinhtrang >=0 && this.state.data.thauphu === 101 && <Row>
                 <Col>
                   <b style={{fontSize: 16}}>Lái xe:</b>
                   <SelectLaiXe
                     disabled={!(intersection(role, [1002]).length > 0)}
                     option={this.state.laixe}
+                    defaultValue={"" + this.state.data.laixe}
                     handleChange={this.changeLaiXe.bind(this)}
                   />
                 </Col>
                 <Col span={24}>
                   <b style={{fontSize: 16}}>Xe:</b>
-                  <AutoComplete
-                    style={{width: '100%'}}
-                    dataSource={this.state.danhsachxe}
-                    value={this.state.data.xe}
-                    onChange={(v) => {
-                      this.setState(prev => {
-                        return {
-                          ...prev,
-                          data: {
-                            ...prev.data,
-                            xe: v
-                          }
+
+                  {/*<AutoComplete*/}
+                    {/*style={{width: '100%'}}*/}
+                    {/*dataSource={this.state.danhsachxe}*/}
+                    {/*value={this.state.data.xe}*/}
+                    {/*onChange={(v) => {*/}
+                      {/*this.setState(prev => {*/}
+                        {/*return {*/}
+                          {/*...prev,*/}
+                          {/*data: {*/}
+                            {/*...prev.data,*/}
+                            {/*xe: v*/}
+                          {/*}*/}
+                        {/*}*/}
+                      {/*})*/}
+                    {/*}}*/}
+                    {/*placeholder="xxX-xxxxx"*/}
+                    {/*filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}*/}
+                  {/*/>*/}
+
+                  <Select
+                    labelInValue value={{ key: this.state.data.xe }}
+                    showSearch
+                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                    style={{ width: '100%' }} onChange={(e) => {
+                    this.setState(prev => {
+                      return {
+                        ...prev,
+                        data: {
+                          ...prev.data,
+                          xe: e.key
                         }
-                      })
-                    }}
-                    placeholder="xxX-xxxxx"
-                    // filterOption={(inputValue, option) => {return true}}
-                  />
+                      }
+                    })
+                  }}>
+                    {this.state.danhsachxe.map((el, index) => {
+                      return <Option key={index} value={el}>{el}</Option>
+                    })}
+                  </Select>
+
                 </Col>
             </Row>}
   
   
-            {this.props.tinhtrang === 0 && this.state.data.thauphu !== 101 &&<Row>
+            {(this.props.tinhtrang === 0 || this.props.edit) && this.state.data.thauphu !== 101 &&<Row>
               <Col>
                 <b style={{fontSize: 16}}>BKS:</b>
+
                 <Input
+                  value={this.state.data.xe}
                   onChange={(e) => {
                     let value = e.target.value;
                     this.setState(prev => {
@@ -408,71 +558,134 @@ class DOPage extends React.Component {
                     })
                   }}
                 />
+
               </Col>
          
             </Row>}
   
   
-            {this.props.tinhtrang < 0 && !this.props.quaydau && <Row>
+            {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row>
+
+              <Col span={12}>
                 <b style={{fontSize: 16}}>Khách hàng:</b>
-                {/*<CompleteInput*/}
-                  {/*option={this.state.khachhang}*/}
-                  {/*onChange={this.changeKhachHang}*/}
-                {/*/>*/}
-              <Select
-                style={style}
-                defaultValue={'' + this.state.data.khachhang}
-                onChange={this.changeKhachHang}
-              >
-                {khachhang.map((el, idx) => {
-                  return <Option key={idx} value={el.code}>{el.value}</Option>
-                })}
-              </Select>
-            </Row>}
-            {this.props.tinhtrang < 0 && !this.props.quaydau && <Row>
+                <Select
+                  showSearch
+                  style={style}
+                  value={'' + this.state.data.khachhang}
+                  onChange={this.changeKhachHang}
+                  filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
+                >
+                  {this.state.khachhang.map((el, idx) => {
+                    return <Option key={idx} value={el.code}>{el.value}</Option>
+                  })}
+                </Select>
+                <CreateKhachHang
+                  handleOk={(el) => {
+                    this.initKhachHang()
+                    this.setState(prev => { return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        khachhang: el.code
+                      }
+                    }})
+                  }}
+                />
+              </Col>
+
+              <Col span={12}>
                 <b style={{fontSize: 16}}>Người yêu cầu:</b>
                 {/*<CompleteInput*/}
-                  {/*option={this.state.nguoiyeucau}*/}
-                  {/*onChange={this.changeNguoiYeuCau}*/}
+                {/*option={this.state.nguoiyeucau}*/}
+                {/*onChange={this.changeNguoiYeuCau}*/}
                 {/*/>*/}
-              <Select
-                style={style}
-                defaultValue={'' + this.state.data.nguoiyeucau}
-                onChange={this.changeNguoiYeuCau}
-              >
-                {nguoiyeucau.map((el, idx) => {
-                  return <Option key={idx} value={el.code}>{el.value}</Option>
-                })}
-              </Select>
+                <Select
+                  showSearch
+                  style={style}
+                  defaultValue={'' + this.state.data.nguoiyeucau}
+                  onChange={this.changeNguoiYeuCau}
+                  filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
+                >
+                  {nguoiyeucau.map((el, idx) => {
+                    return <Option key={idx} value={el.code}>{el.value}</Option>
+                  })}
+                </Select>
+              </Col>
+
             </Row>}
 
-            {this.props.tinhtrang < 0 && <Row style={{marginTop: 10}}>
-              <b style={{fontSize: 16}}>Điểm đi:</b>
-              <SelectPlace
-                multi={false}
-                onChange = {this.changeDiemXuatPhat}
-              />
-              
+  
+            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+
+              <Col span={12}>
+                <b style={{fontSize: 16}}>Điểm đi:</b>
+                <SelectPlace
+                  multi={true}
+                  defaultValue={this.state.data.diemxuatphat}
+                  onChange = {this.changeDiemXuatPhat}
+                />
+              </Col>
+
+              <Col span={12}>
+                <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
+                <SelectPlace
+                  multi = {true}
+                  defaultValue={this.state.data.diemtrahang}
+                  onChange = {this.changeDiemTraHang}
+                />
+              </Col>
             </Row>}
-  
-  
-            {this.props.tinhtrang < 0 && <Row style={{marginTop: 10}}>
-              <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
-              <SelectPlace
-                multi = {true}
-                onChange = {this.changeDiemTraHang}
-              />
+
+            {/*{(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>*/}
+              {/*<Col span={12}>*/}
+                {/*<b style={{fontSize: 16}}>Điểm bắt đầu</b>*/}
+                {/*<br/>*/}
+                {/*<Select*/}
+                  {/*showSearch*/}
+                  {/*style={{ width: '100%' }}*/}
+                  {/*value={'' + this.state.data.diembatdau}*/}
+                  {/*onChange={this.changeDiembatdau}*/}
+                {/*>*/}
+                  {/*{diembatdauOption}*/}
+                {/*</Select>*/}
+              {/*</Col>*/}
+              {/*<Col span={12}>*/}
+                {/*<b style={{fontSize: 16}}>Điểm trả hàng xa nhất</b>*/}
+                {/*<br/>*/}
+                {/*<Select*/}
+                  {/*showSearch*/}
+                  {/*style={{ width: '100%' }}*/}
+                  {/*value={'' + this.state.data.diemxanhat}*/}
+                  {/*onChange={this.changeDiemxanhat}*/}
+                {/*>*/}
+                  {/*{diemxanhatOption}*/}
+                {/*</Select>*/}
+              {/*</Col>*/}
+            {/*</Row>}*/}
+
+
+
+            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+
+              <Col span={12}>
+                <b style={{fontSize: 16}}>Tỉnh xuất phát:</b>
+                <br/>
+                <Tinh
+                  defaultValue={this.state.data.tinhxuatphat ? this.state.data.tinhxuatphat.code : "01"}
+                  handleChange={this.changeTinhXuatPhat}
+                />
+              </Col>
+              <Col span={12}>
+                <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
+                <br/>
+                <Tinh
+                  defaultValue={this.state.data.tinhtrahang ? this.state.data.tinhtrahang.code : "01"}
+                  handleChange={this.changeTinh}
+                />
+              </Col>
             </Row>}
-  
-            {this.props.tinhtrang < 0 && <Row style={{marginTop: 10}}>
-              <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
-              <Tinh
-                defaultValue={this.state.data.tinhtrahang ? this.state.data.tinhtrahang.code : "01"}
-                handleChange={this.changeTinh}
-              />
-            </Row>}
-  
-            {this.props.tinhtrang < 0 && <Row style={{marginTop: 10}}>
+
+            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
               <Col span={24}>
                 <b style={{fontSize: 16}}>Trọng tải (tấn):</b>
@@ -507,8 +720,25 @@ class DOPage extends React.Component {
 
            
             </Row>}
-            
-          
+
+            <Row style={{marginTop: 10}}>
+              <b style={{fontSize: 16}}>Ghi chú:</b>
+              <Input type="textarea" rows={4}
+                     defaultValue={this.state.data.ghichu}
+                     onChange={(e) => {
+                       let value = e.target.value
+                       this.setState(prev => {
+                         return {
+                           ...prev,
+                           data: {
+                             ...prev.data,
+                             ghichu: value
+                           }
+                         }
+                       })
+                     }}
+              />
+            </Row>
             
             <Row style={{marginTop: 20}}>
               {this.props.tinhtrang < 0 && <Button type="primary"
@@ -560,6 +790,26 @@ class DOPage extends React.Component {
               >
                 Chọn lái xe & xe
               </Button>}
+              {this.props.edit && <Button type="primary"
+                                          style={{fontSize: 16}}
+                                          onClick={() => {
+                                            if(check(gThis.state.data)) {
+                                              agent.DieuHanh.capNhapDO(gThis.state.data)
+                                                .then(res => {
+                                                  message.success("Cập nhập thành công")
+                                                  // this.context.router.replace('/dieuhanh');
+                                                  this.props.success()
+
+                                                })
+                                                .catch(err => {
+                                                  message.error("Cập nhập that bai")
+                                                })
+                                            }
+                                          }}
+              >
+                Cập nhập
+              </Button>
+              }
               
             </Row>
           </div> }
@@ -625,10 +875,17 @@ function check(data){
     message.error("Người yêu cầu không được để trống")
     return false
   }
+
+  if(data.tinhxuatphat === undefined || data.tinhxuatphat.name.trim().length < 1){
+    message.error("Tỉnh xuất phát không được để trống")
+    return false
+  }
+
   if(data.tinhtrahang === undefined || data.tinhtrahang.name.trim().length < 1){
     message.error("Tỉnh trả hàng không được để trống")
     return false
   }
+
   if(data.diemxuatphat=== undefined || data.diemxuatphat.length < 1){
     message.error("Điểm xuất phát không được để trống")
     return false
@@ -682,19 +939,6 @@ function checkLaiXe(data){
 
 const style = {
   width: '100%'
-}
-
-const khachhang = [
-  {code: '101', value: 'VIN'},
-  {code: '102', value: 'LENSON'},
-  {code: '199', value: 'Khách Lẻ'},
-]
-
-var khachhangObj = {}
-if(khachhang){
-  khachhang.forEach(el => {
-    khachhangObj[el.code] = el
-  })
 }
 
 const nguoiyeucau = [

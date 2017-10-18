@@ -25,7 +25,7 @@ class Tinh extends React.PureComponent {
     return (
       <Select
         showSearch
-        style={{ width: "32%", marginLeft: 5, marginTop: 5  }}
+        style={{ width: "80%", marginLeft: 5, marginTop: 5  }}
         defaultValue={this.props.defaultValue ? this.props.defaultValue : "01"}
         optionFilterProp="children"
         placeholder="Tỉnh thành"

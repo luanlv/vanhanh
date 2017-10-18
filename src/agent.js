@@ -139,10 +139,14 @@ const IT = {
 }
 
 const DieuHanh = {
+  xoaLenh: (id) =>
+    requests.get(`/dieuhanh/do/xoa/${id}`),
+  doById: (id) =>
+    requests.get(`/dieuhanh/do/id/${id}`),
   listDOchuaxacnhan: () =>
     requests.get('/dieuhanh/do/chuaxacnhan'),
-  getDOs: () =>
-    requests.get('/dieuhanh/do/all'),
+  getDOs: (date) =>
+    requests.get(`/dieuhanh/do/all/${date}`),
   listDOchuaphancong: () =>
     requests.get('/dieuhanh/do/chuaphancong'),
   listDODaNhan: () =>
@@ -191,15 +195,20 @@ const DieuHanh = {
     requests.get('/danhsachxe'),
   themDO: data =>
     requests.post('/dieuhanh/do/them', {data}),
+  capNhapDO: data =>
+    requests.post('/dieuhanh/do/capnhap', {data}),
   themAutoFill: (data) =>
     requests.post(`/dieuhanh/autofill/new`, data),
   themDiaDiem: (data) =>
     requests.post(`/dieuhanh/autofill/newPlace`, data),
-  
+  themKhachHang: (data) =>
+    requests.post(`/themkhachhang`, data),
+  themThauPhu: (data) =>
+    requests.post(`/themthauphu`, data),
+  khachHang: () =>
+    requests.get('/khachhang'),
   danhSachThauPhu: () =>
     requests.get('/danhsachthauphu'),
-  themThauPhu: data =>
-    requests.post('/dieuhanh/users/themthauphu', {data}),
   themLaiXe: data =>
     requests.post('/dieuhanh/users/themlaixe', {data}),
   themXe: data =>

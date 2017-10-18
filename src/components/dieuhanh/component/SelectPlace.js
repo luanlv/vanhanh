@@ -13,29 +13,38 @@ class SelectPlace extends React.PureComponent {
   constructor(props) {
     super(props)
     
-    let value = this.props.defaultValue ? this.props.defaultValue.map(el => {
-      el.label = this.name + ' - ' + this.tinh.name + ' - ' + this.code
-      return el
-    }) : []
+    let value = this.props.defaultValue
+    if(props.multi){
+      value = this.props.defaultValue ? this.props.defaultValue.map(el => {
+        el.label = el.name + ' - ' + el.code
+        return el
+      }) : []
+    } else {
+      if(value){
+        value.label = value.name + ' - ' + value.code
+      }
+    }
     
     this.state = {
       value: value,
       backspaceRemoves: false,
       multi: true
     }
+
     bindAll(this, 'addNew', 'onChange', 'getUsers', 'gotoUser')
+
   }
   
   onChange(value) {
     this.setState({
       value: value,
     });
-    // console.log(JSON.stringify(value))
     if(this.props.onChange) this.props.onChange(value)
   }
 
   getUsers = async (input) => {
     let place = await agent.DieuHanh.place(input)
+    // console.log(place)
     return { options: place }
   }
   
@@ -45,8 +54,12 @@ class SelectPlace extends React.PureComponent {
   
   addNew(obj){
     let value = this.state.value
-    obj.label = obj.name + ' - ' + obj.tinh.name + ' - ' + obj.code;
-    value.push(obj)
+    obj.label = obj.name + ' - ' + obj.code;
+    if(this.props.multi){
+      value.push(obj)
+    } else {
+      value = obj
+    }
     this.setState({value: value})
     this.places.focus()
     if(this.props.onChange) this.props.onChange(value)
@@ -55,6 +68,8 @@ class SelectPlace extends React.PureComponent {
   render () {
     const AsyncComponent = Select.Async
     // console.log('dia diem')
+    // console.log(this.props.multi)
+    // console.log(this.state.value)
     return (
       <div className="section">
         <AsyncComponent multi={this.props.multi}
@@ -79,7 +94,7 @@ class SelectPlace extends React.PureComponent {
             console.log(listCode)
             let places = await agent.DieuHanh.codeToPlace(listCode)
             places.map(el => {
-              el.label = el.name + " - " + el.tinh.name + ' - ' + el.code
+              el.label = el.name + " - " + el.code
               return el
             })
             let value = this.state.value

@@ -11,6 +11,7 @@ import {Link} from 'react-router'
 import enUS from 'antd/lib/locale-provider/en_US';
 import viVN from 'antd/lib/locale-provider/vi_VN';
 import moment from 'moment'
+import SocketProvider from './SocketProvider'
 
 import intersection from 'lodash/intersection'
 
@@ -88,150 +89,92 @@ class App extends React.Component {
         const role = this.props.currentUser.role
         return (
           <LocaleProvider locale={viVN}>
-            <Layout>
-              <Sider
-                collapsible
-                breakpoint="lg"
-                collapsedWidth="0"
-                collapsed={this.state.collapsed}
-                onCollapse={this.onCollapse}
-                width="170"
-              >
-                <div className="logo" />
-                <div className="admin-topSlide">
-                  <span>COLOMBUS</span>
-                </div>
-                <Menu theme="dark"
-                      mode={this.state.mode}
-                      selectedKeys={[this.props.name]}
-                      defaultOpenKeys={['lenhdieuxe', 'thongke', 'thuquy']}
-                >
-                  <Menu.Item key="Dashboard">
-                    <Link to="/">
-                  <span>
-                    <Icon type="layout" />
-                    <span className="nav-text">Dashboard</span>
-                  </span>
-                    </Link>
-                  </Menu.Item>
-                  
-                  {(intersection(role, [302, 101, 201, 1002]).length > 0) && <SubMenu
-                    key="lenhdieuxe"
-                    title={<span><Icon type="idcard" /><span className="nav-text">Lệnh điều xe</span></span>}
-                  >
-                    <Menu.Item key="lenhdieuxe1">
-                      <Link to={"do/dieuxe"} >Lệnh điều xe</Link>
-                    </Menu.Item>
-                    
-                    <Menu.Item key="lenhdieuxe3">
-                      <Link to="#" >Lịch sử</Link>
-                    </Menu.Item>
-                    
-                  </SubMenu>}
-  
-                  {/*<SubMenu*/}
-                    {/*key="laixe"*/}
-                    {/*title={<span><Icon type="idcard" /><span className="nav-text">Lái xe</span></span>}*/}
-                  {/*>*/}
-                    {/*<Menu.Item key="laixe1">*/}
-                      {/*<Link to="#" >Thêm lái xe</Link>*/}
-                    {/*</Menu.Item>*/}
-                    {/*<Menu.Item key="laixe2">*/}
-                      {/*<Link to="#" >Danh sách lái xe</Link>*/}
-                    {/*</Menu.Item>*/}
-                  {/*</SubMenu>*/}
-  
-  
-                {/*  <SubMenu
-                    key="thauphu"
-                    title={<span><Icon type="idcard" /><span className="nav-text">Thầu phụ</span></span>}
-                  >
-                    <Menu.Item key="thauphu1">
-                      <Link to="#" >Thêm thầu phụ</Link>
-                    </Menu.Item>
-                    <Menu.Item key="thauphu2">
-                      <Link to="#" >Danh sách thầu phụ</Link>
-                    </Menu.Item>
-                  </SubMenu>*/}
-  
-                  {/*<SubMenu*/}
-                    {/*key="xe"*/}
-                    {/*title={<span><Icon type="idcard" /><span className="nav-text">Xe</span></span>}*/}
-                  {/*>*/}
-                    {/*<Menu.Item key="xe1">*/}
-                      {/*<Link to="#" >Thêm xe mới</Link>*/}
-                    {/*</Menu.Item>*/}
-                    {/*<Menu.Item key="xe2">*/}
-                      {/*<Link to="#" >Danh sách xe</Link>*/}
-                    {/*</Menu.Item>*/}
-                  {/*</SubMenu>*/}
-  
-                  {/*<SubMenu*/}
-                    {/*key="nhansu"*/}
-                    {/*title={<span><Icon type="idcard" /><span className="nav-text">Nhân sự</span></span>}*/}
-                  {/*>*/}
-                    {/*<Menu.Item key="nhansu1">*/}
-                      {/*<Link to="phongban" >Bộ phận/phòng/ban</Link>*/}
-                    {/*</Menu.Item>*/}
-                    {/*<Menu.Item key="nhansu2">*/}
-                      {/*<Link to="nhanvien" >Nhân sự</Link>*/}
-                    {/*</Menu.Item>*/}
-                  {/*</SubMenu>*/}
-  
-                  {/*<SubMenu*/}
-                    {/*key="thuquy"*/}
-                    {/*title={<span><Icon type="idcard" /><span className="nav-text">Thủ quỹ</span></span>}*/}
-                  {/*>*/}
-                    {/*<Menu.Item key="thuquy1">*/}
-                      {/*<Link to="#" >Khai báo thu/chi</Link>*/}
-                    {/*</Menu.Item>*/}
-                    {/*<Menu.Item key="thuquy2">*/}
-                      {/*<Link to="#" >Lịch sử</Link>*/}
-                    {/*</Menu.Item>*/}
-                  {/*</SubMenu>*/}
-  
-                  
-                  <SubMenu
-                    key="thuquy"
-                    title={<span><Icon type="idcard" /><span className="nav-text">Thủ quỹ</span></span>}
-                  >
-                    <Menu.Item key="thuquy1">
-                      <Link to="thuchi" >Thu/Chi</Link>
-                    </Menu.Item>
-                  </SubMenu>
-                  
-                  
-                  <SubMenu
-                    key="thongke"
-                    title={<span><Icon type="idcard" /><span className="nav-text">Báo cáo</span></span>}
-                  >
-                    <Menu.Item key="thongke">
-                      <Link to="/thongke" >Theo ngày/khách hàng</Link>
-                    </Menu.Item>
-                  
-                  </SubMenu>
-                  
-                  
-                </Menu>
-              </Sider>
-      
+            <SocketProvider>
               <Layout>
-                <Header style={{ height: 47, background: 'white', padding: 0}} >
-                  <Button type="ghost"
-                          style={{float: 'right', margin: 10 }}
-                          onClick={this.props.onClickLogout}
-                  >Đăng xuất</Button>
-                </Header>
-                <Content style={{ margin: '0 5px' }}>
-                  <div style={{background: '#fff', minHeight: 500 }}>
-                    {this.props.children}
+                <Sider
+                  collapsible
+                  breakpoint="lg"
+                  collapsedWidth="0"
+                  collapsed={this.state.collapsed}
+                  onCollapse={this.onCollapse}
+                  width="170"
+                >
+                  <div className="logo" />
+                  <div className="admin-topSlide">
+                    <span>COLOMBUS</span>
                   </div>
-                </Content>
-                <Footer style={{ textAlign: 'center'}}>
-                  Admin Page ©201 Created by Lưu Văn Luận
-                </Footer>
+                  <Menu theme="dark"
+                        mode={this.state.mode}
+                        selectedKeys={[this.props.name]}
+                        defaultOpenKeys={['lenhdieuxe', 'thongke', 'thuquy']}
+                  >
+                    <Menu.Item key="Dashboard">
+                      <Link to="/">
+                    <span>
+                      <Icon type="layout" />
+                      <span className="nav-text">Dashboard</span>
+                    </span>
+                      </Link>
+                    </Menu.Item>
+
+                    {(intersection(role, [302, 101, 201, 1002]).length > 0) && <SubMenu
+                      key="lenhdieuxe"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Lệnh điều xe</span></span>}
+                    >
+                      <Menu.Item key="lenhdieuxe1">
+                        <Link to={"do/dieuxe"} >Lệnh điều xe</Link>
+                      </Menu.Item>
+
+                      {/*<Menu.Item key="lenhdieuxe3">*/}
+                        {/*<Link to="#" >Lịch sử</Link>*/}
+                      {/*</Menu.Item>*/}
+
+                    </SubMenu>}
+
+                    {/*<SubMenu*/}
+                      {/*key="thuquy"*/}
+                      {/*title={<span><Icon type="idcard" /><span className="nav-text">Thủ quỹ</span></span>}*/}
+                    {/*>*/}
+                      {/*<Menu.Item key="thuquy1">*/}
+                        {/*<Link to="thuchi" >Thu/Chi</Link>*/}
+                      {/*</Menu.Item>*/}
+                    {/*</SubMenu>*/}
+
+
+                    <SubMenu
+                      key="thongke"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Báo cáo</span></span>}
+                    >
+                      <Menu.Item key="thongke">
+                        <Link to="/thongke" >Chi tiết</Link>
+                      </Menu.Item>
+                      {/*<Menu.Item key="bieudo">*/}
+                        {/*<Link to="/bieudo" >Biểu đồ</Link>*/}
+                      {/*</Menu.Item>*/}
+
+                    </SubMenu>
+
+
+                  </Menu>
+                </Sider>
+                <Layout>
+                  <Header style={{ height: 47, background: 'white', padding: 0}} >
+                    <Button type="ghost"
+                            style={{float: 'right', margin: 10 }}
+                            onClick={this.props.onClickLogout}
+                    >Đăng xuất</Button>
+                  </Header>
+                  <Content style={{ margin: '0 5px' }}>
+                    <div style={{background: '#fff', minHeight: 500 }}>
+                      {this.props.children}
+                    </div>
+                  </Content>
+                  <Footer style={{ textAlign: 'center'}}>
+                    Admin Page ©201 Created by Lưu Văn Luận
+                  </Footer>
+                </Layout>
               </Layout>
-            </Layout>
+            </SocketProvider>
           </LocaleProvider>
         )
       }
@@ -245,7 +188,8 @@ class App extends React.Component {
 }
 
 App.contextTypes = {
-  router: PropTypes.object.isRequired
+  router: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
