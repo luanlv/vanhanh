@@ -40,6 +40,7 @@ class Home extends React.Component {
       startValue: moment(Date.now()).format('YYYYMMDD'),
       endValue: moment(Date.now()).format('YYYYMMDD'),
       khachhang: 'tatca',
+      laixe: 'tatca',
       endOpen: false,
       init: false,
       loadingText: '...',
@@ -52,7 +53,7 @@ class Home extends React.Component {
       
       do: []
     }
-    bindAll(this, 'init', 'changeKhachHang', 'onChangeRange', 'handleChange' )
+    bindAll(this, 'init', 'changeKhachHang', 'changeLaiXe', 'onChangeRange', 'handleChange' )
     this.init()
   }
   
@@ -97,7 +98,7 @@ class Home extends React.Component {
   }
   
   init = async () => {
-    const DO = await agent.DieuHanh.getThongKe(this.state.startValue, this.state.endValue, this.state.khachhang)
+    const DO = await agent.DieuHanh.getThongKeLaiXe(this.state.startValue, this.state.endValue, this.state.laixe)
     this.setState({
       do: DO
     })
@@ -161,10 +162,9 @@ class Home extends React.Component {
     if(this.state.filteredInfo && this.state.filteredInfo.tenkhachhang && this.state.filteredInfo.tenkhachhang.length > 0){
       DOs = DOs.filter(el => {return this.state.filteredInfo.tenkhachhang.indexOf(el.khachhang + '') >= 0})
     }
-    console.log(this.state.filteredInfo)
     return (
       <div>
-        <h5 style={{textAlign: 'center'}}>Báo cáo tổng hợp</h5>
+        <h5 style={{textAlign: 'center'}}>Báo cáo theo lái xe</h5>
         {/*<DatePicker*/}
           {/*disabledDate={this.disabledStartDate}*/}
           {/*format="DD/MM/YYYY"*/}
@@ -187,38 +187,23 @@ class Home extends React.Component {
           format={'DD/MM/YYYY'}
           onChange={this.onChangeRange}
         />
-        {/*<Select*/}
-          {/*style={{width: 250}}*/}
-          {/*value={this.state.khachhang}*/}
-          {/*onChange={this.changeKhachHang}*/}
-        {/*>*/}
-          {/*<Option key="tatca" value="tatca">Tất cả { this.state.khachhang === 'tatca' && <span style={{color: 'red', fontWeight: 'bold'}}>({DOs.length})</span> }</Option>*/}
-          {/*{ this.state.danhsachkhachhang.map((el, idx) => {*/}
-              {/*let length = DOs.filter((e) => {return e.khachhang == el.code}).length*/}
-              {/*return (<Option key={idx} value={el.code}>{el.value} { length > 0 && <span style={{color: 'red', fontWeight: 'bold'}}>({length})</span> }</Option>)*/}
-            {/*})*/}
-          {/*}*/}
+        <Select
+          style={{width: 250}}
+          value={this.state.laixe}
+          onChange={this.changeLaiXe}
+        >
+          <Option key="tatca" value="tatca">Tất cả { this.state.laixe === 'tatca' && <span style={{color: 'red', fontWeight: 'bold'}}>({DOs.length})</span> }</Option>
+          { this.state.danhsachlaixe.map((el, idx) => {
+              let length = DOs.filter((e) => {return e.laixe == el.ma}).length
+              return (<Option key={idx} value={el.ma}>{el.ten} { length > 0 && <span style={{color: 'red', fontWeight: 'bold'}}>({length})</span> }</Option>)
+            })
+          }
 
 
-        {/*</Select>*/}
-        <span> | </span>
-        <Input style={{width: 200}}
-               placeholder="Mã lệnh"
-               onChange={(e) => {
-                 let value = e.target.value
-                 this.setState({
-                   malenh: value
-                 }, () => {
-                   // alert(this.state.malenh)
-                 })
-               }}
-        />
-        <Button
-          onClick={this.xemLenh}
-        >Xem thông tin</Button>
+        </Select>
 
         <div style={{float: 'right'}}>
-          <a href={`${agent.API_ROOT}/dieuhanh/do/excel?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&khachhang=${this.state.khachhang}`} target="_blank"><Button>Xuất Excel</Button></a>
+          <a href={`${agent.API_ROOT}/dieuhanh/do/exceltheolaixe?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&laixe=${this.state.laixe}`} target="_blank"><Button>Xuất Excel</Button></a>
         </div>
 
         <hr/>
@@ -393,6 +378,11 @@ class Home extends React.Component {
   changeKhachHang = async (value) => {
     // console.log(value)
     await this.setState({khachhang: value})
+    this.init()
+  }
+  changeLaiXe = async (value) => {
+    // console.log(value)
+    await this.setState({laixe: value})
     this.init()
   }
   

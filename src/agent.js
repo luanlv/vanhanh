@@ -147,6 +147,8 @@ const DieuHanh = {
     requests.get('/dieuhanh/do/chuaxacnhan'),
   getDOs: (date) =>
     requests.get(`/dieuhanh/do/all/${date}`),
+  getDOs5Day: () =>
+    requests.get(`/dieuhanh/do/5day`),
   listDOchuaphancong: () =>
     requests.get('/dieuhanh/do/chuaphancong'),
   listDODaNhan: () =>
@@ -217,6 +219,14 @@ const DieuHanh = {
     requests.get('/date'),
   getThongKe: (start, end, thauphu) =>
     requests.get(`/dieuhanh/do/thongke?start=${start}&end=${end}&khachhang=${thauphu}`),
+  getThongKeLaiXe: (start, end, laixe) =>
+    requests.get(`/dieuhanh/do/thongkelaixe?start=${start}&end=${end}&laixe=${laixe}`),
+  getThongKeTheoXe: (start, end, xe) =>
+    requests.get(`/dieuhanh/do/thongketheoxe?start=${start}&end=${end}&xe=${xe}`),
+  getThongKeThauPhu: (start, end, thauphu) =>
+    requests.get(`/dieuhanh/do/thongketheothauphu?start=${start}&end=${end}&thauphu=${thauphu}`),
+  getThongKeTheoKhachHang: (start, end, khachhang) =>
+    requests.get(`/dieuhanh/do/thongketheokhachhang?start=${start}&end=${end}&khachhang=${khachhang}`),
 }
 
 

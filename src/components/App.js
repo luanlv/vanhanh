@@ -74,6 +74,7 @@ class App extends React.Component {
   
     const date = await agent.DieuHanh.getDate();
     // console.log(date)
+    let DO5days = await agent.DieuHanh.getDOs5Day()
     this.setState({
       date: date.date
     })
@@ -146,7 +147,19 @@ class App extends React.Component {
                       title={<span><Icon type="idcard" /><span className="nav-text">Báo cáo</span></span>}
                     >
                       <Menu.Item key="thongke">
-                        <Link to="/thongke" >Chi tiết</Link>
+                        <Link to="/thongke" >Tổng hợp</Link>
+                      </Menu.Item>
+                      <Menu.Item key="thongketheolaixe">
+                        <Link to="/thongketheolaixe" >Theo lái xe</Link>
+                      </Menu.Item>
+                      <Menu.Item key="thongketheoxe">
+                        <Link to="/thongketheoxe" >Theo xe</Link>
+                      </Menu.Item>
+                      <Menu.Item key="thongketheothauphu">
+                        <Link to="/thongketheothauphu" >Theo thầu phụ</Link>
+                      </Menu.Item>
+                      <Menu.Item key="thongketheokhachhang">
+                        <Link to="/thongketheokhachhang" >Theo khách hàng</Link>
                       </Menu.Item>
                       {/*<Menu.Item key="bieudo">*/}
                         {/*<Link to="/bieudo" >Biểu đồ</Link>*/}

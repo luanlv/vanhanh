@@ -91,8 +91,15 @@ class SelectPlace extends React.PureComponent {
           style={{float: 'right'}}
           onClick={async () => {
             let listCode = prompt("Dánh sách các mã");
-            console.log(listCode)
             let places = await agent.DieuHanh.codeToPlace(listCode)
+            let notFound = []
+            let listCodeArr = listCode.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } )
+            listCodeArr.forEach(el => {
+              if(places.findIndex(pl => {return pl.code ===  el}) < 0 ){
+                notFound.push(el);
+              }
+            })
+            alert("Không tìm thấy địa điểm có mã: " + notFound.join(', '))
             places.map(el => {
               el.label = el.name + " - " + el.code
               return el
@@ -105,7 +112,8 @@ class SelectPlace extends React.PureComponent {
             this.places.focus()
             if(this.props.onChange) this.props.onChange(value)
           }}
-        >Thêm theo mã</Button>}
+        >Thêm theo mã</Button>
+        }
       </div>
       
     )

@@ -8,16 +8,20 @@ import enUS from 'antd-mobile/lib/locale-provider/en_US';
 
 import App from './components/App';
 
-import ThemLaiXe from './components/it/LaiXe';
-import ThemXe from './components/it/Xe';
-import ThemThauPhu from './components/it/ThauPhu';
-import ThemDieuHanh from './components/it/DieuHanh';
-import HomeIT from './components/it/Home';
-import ThemAutoFill from './components/it/AutoFill';
+// import ThemLaiXe from './components/it/LaiXe';
+// import ThemXe from './components/it/Xe';
+// import ThemThauPhu from './components/it/ThauPhu';
+// import ThemDieuHanh from './components/it/DieuHanh';
+// import HomeIT from './components/it/Home';
+// import ThemAutoFill from './components/it/AutoFill';
 
 
 import Home from './components/dashboard/Home';
 import ThongKe from './components/dieuhanh/ThongKe';
+import ThongKeTheoLaiXe from './components/dieuhanh/ThongKeLaiXe';
+import ThongKeTheoXe from './components/dieuhanh/ThongKeTheoXe';
+import ThongKeTheoThauPhu from './components/dieuhanh/ThongKeTheoThauPhu';
+import ThongKeTheoKhachHang from './components/dieuhanh/ThongKeTheoKhachHang';
 import BieuDo from './components/dieuhanh/BieuDo';
 import HomeDieuHanh from './components/dieuhanh/Home';
 import DieuXe from './components/dieuhanh/DO';
@@ -25,22 +29,22 @@ import PhongBan from './components/nhansu/PhongBan';
 import NhanVien from './components/nhansu/NhanVien';
 import ThuChi from './components/thuquy/Quy';
 
-import DieuHanhDOMenu from './components/dieuhanh/DoMenu';
-import DieuHanhPhuPhi from './components/dieuhanh/ListPhuPhi';
-import DieuHanhEditDO from './components/dieuhanh/EditDO';
-import DieuHanhEditPhuPhi from './components/dieuhanh/EditPhuPhi';
-import DieuHanhListDO from './components/dieuhanh/ListDO';
-import DieuHanhListDOChuaPhanCong from './components/dieuhanh/ListDOPending';
-import DieuHanhListDODaNhan from './components/dieuhanh/ListDODaNhan';
-import DieuHanhListDOChuaNhan from './components/dieuhanh/ListDOChuaNhan';
-import DieuHanhThemAutoFill from './components/dieuhanh/AutoFill';
-import DieuHanhThemLaiXe from './components/dieuhanh/LaiXe';
-import DieuHanhThemXe from './components/dieuhanh/Xe';
-
-
-import HomeThauPhu from './components/thauphu/Home';
-import ThauPhuDanhSachLaiXe from './components/thauphu/ListLaiXe';
-import ThauPhuThemLaiXe from './components/thauphu/LaiXe';
+// import DieuHanhDOMenu from './components/dieuhanh/DoMenu';
+// import DieuHanhPhuPhi from './components/dieuhanh/ListPhuPhi';
+// import DieuHanhEditDO from './components/dieuhanh/EditDO';
+// import DieuHanhEditPhuPhi from './components/dieuhanh/EditPhuPhi';
+// import DieuHanhListDO from './components/dieuhanh/ListDO';
+// import DieuHanhListDOChuaPhanCong from './components/dieuhanh/ListDOPending';
+// import DieuHanhListDODaNhan from './components/dieuhanh/ListDODaNhan';
+// import DieuHanhListDOChuaNhan from './components/dieuhanh/ListDOChuaNhan';
+// import DieuHanhThemAutoFill from './components/dieuhanh/AutoFill';
+// import DieuHanhThemLaiXe from './components/dieuhanh/LaiXe';
+// import DieuHanhThemXe from './components/dieuhanh/Xe';
+//
+//
+// import HomeThauPhu from './components/thauphu/Home';
+// import ThauPhuDanhSachLaiXe from './components/thauphu/ListLaiXe';
+// import ThauPhuThemLaiXe from './components/thauphu/LaiXe';
 
 ReactDOM.render((
   <LocaleProvider locale={enUS}>
@@ -54,6 +58,10 @@ ReactDOM.render((
           
           
           <Route path="thongke" component={ThongKe} />
+          <Route path="thongketheolaixe" component={ThongKeTheoLaiXe} />
+          <Route path="thongketheoxe" component={ThongKeTheoXe} />
+          <Route path="thongketheothauphu" component={ThongKeTheoThauPhu} />
+          <Route path="thongketheokhachhang" component={ThongKeTheoKhachHang} />
           <Route path="bieudo" component={BieuDo} />
           <Route path="thuchi" component={ThuChi} />
 

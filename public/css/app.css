@@ -1,2 +1,9 @@
 .chuyenquaydau .ant-modal-content {
   border: 2px solid red !important; }
+
+@media screen and (max-width: 600px) {
+  #header {
+    font-size: 14px !important; }
+  .newDO {
+    width: 60px !important;
+    padding: 3px !important; } }

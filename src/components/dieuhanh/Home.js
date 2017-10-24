@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import agent from '../../agent';
 import {Link} from 'react-router'
 import { connect } from 'react-redux';
+import Status from './component/Status'
 import {
   HOME_PAGE_LOADED,
   HOME_PAGE_UNLOADED,
@@ -130,7 +131,6 @@ class Home extends React.Component {
       const danhsachlaixe = await agent.DieuHanh.danhsachlaixe()
       const danhsachxe = await agent.DieuHanh.danhsachxe()
       // console.log(date)
-      console.log(danhsachthauphu)
       if (DOs) {
         let tp = {}
         danhsachthauphu.forEach(el => {
@@ -194,6 +194,15 @@ class Home extends React.Component {
     let dieurong = []
     let huy = []
 
+
+    let cur = parseInt(moment(Date.now()).subtract(1, 'days').format('YYYYMMDD'))
+    let select = this.state.date
+    let editOk = true
+    if(select < cur) editOk = false
+    if(select === cur && moment().hour() >= 11) editOk = false
+
+    // console.log(editOk)
+
     this.state.DOs.map((el, index) => {
       if(el.laixe === -1 || el.tinhtrang === 0){
         lenhcho.push(el)
@@ -217,18 +226,25 @@ class Home extends React.Component {
         </div>
       )
     }
-    console.log(this.state.danhsachthauphu)
-    console.log(this.state.danhsachthauphuObj)
+    // console.log(this.state.danhsachthauphu)
+    // console.log(this.state.danhsachthauphuObj)
     return (
       <div className="home-page" style={{marginTop: 10, padding: 10}}>
-        <div style={{float: 'right', fontSize: 12}}>Ngày hiện tại: <b style={{color: 'red'}}>{moment(Date.now()).format('DD-MM-YYYY')}</b></div>
-        <h2 style={{textAlign: 'center', color: 'red'}}>{moment(this.state.date).format('DD-MM-YYYY')}</h2>
+
+        <div style={{float: 'right', fontSize: 12}}>
+          Ngày hiện tại: <b style={{color: 'red'}}>{moment(Date.now()).format('DD-MM-YYYY')}</b>
+        </div>
+
+
+        <h2 id="header" style={{textAlign: 'center', color: 'red'}}>{moment(this.state.date).format('DD-MM-YYYY')}
+          <Status date={parseInt(this.state.date)} />
+        </h2>
         <span style={{marginRight: 5}}>
-          <Button type="primary" onClick={this.showModal1}>COLOMBUS</Button>
+          {editOk && <Button className="newDO" type="primary" onClick={this.showModal1}>COLOMBUS</Button>}
         </span>
 
         <span style={{marginRight: 5}}>
-          <Button type="primary" onClick={this.thauphu}>Thầu phụ</Button>
+          {editOk && <Button className="newDO" type="primary" onClick={this.thauphu}>Thầu phụ</Button>}
         </span>
         <span style={{float: 'right'}}>
           <DatePicker format="DD-MM-YYYY"
@@ -241,8 +257,6 @@ class Home extends React.Component {
         <hr
           style={{margin: 10}}
         />
-
-
 
         <Tabs
           defaultActiveKey="1"
@@ -270,7 +284,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -282,15 +296,17 @@ class Home extends React.Component {
                         Ghi chú: <b>{el.ghichu}</b>
                       </div>
                     </Col>
+
                     <Col span={12}>
                       Điểm trả hàng: <b style={{color: 'red'}}> {el.diemtrahang.length}</b> điểm
                         {el.diemtrahang.map((diemtra, index2) => {
                           return <div key={index2} style={{paddingLeft: 20, fontSize: 12, color: el.diemxanhat === index2 ? "red":"black" }}><b>[{index2 + 1}] {diemtra.name} {el.diemxanhat === index2 ? "(*)":"" }</b></div>
                         })}
                     </Col>
+
                   </Row>
 
-                  <div>
+                  {editOk && <div>
 
                     <Button type="primary"
                             onClick={() => this.chonLaiXe(el)}
@@ -311,7 +327,7 @@ class Home extends React.Component {
                       <Button type="danger">Xóa lệnh</Button>
                     </Popconfirm>
 
-                  </div>
+                  </div>}
                 </div>
               )
             })}
@@ -357,7 +373,7 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  <div>
+                  {editOk && <div>
                     <Popconfirm title="Xác nhận?" onConfirm={() => {
                       agent.DieuHanh.nhanLenhThay(el)
                       .then(res => {
@@ -393,7 +409,7 @@ class Home extends React.Component {
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
-                  </div>
+                  </div> }
                 </div>
               )
             })}
@@ -440,7 +456,7 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  <div>
+                  {editOk && <div>
                     <Popconfirm title="Xác nhận?" onConfirm={() => {
                       agent.DieuHanh.daGiaoHang(el)
                       .then(res => {
@@ -498,7 +514,7 @@ class Home extends React.Component {
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
-                  </div>
+                  </div>}
 
                 </div>
               )
@@ -525,7 +541,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -545,11 +561,11 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  <div>
+                  {editOk && <div>
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
-                  </div>
+                  </div> }
                 </div>
               )
             })}
@@ -596,11 +612,11 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  <div>
+                  {editOk && <div>
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
-                  </div>
+                  </div>}
                 </div>
               )
             })}
@@ -647,11 +663,11 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  <div>
+                  {editOk && <div>
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
-                  </div>
+                  </div> }
                 </div>
               )
             })}

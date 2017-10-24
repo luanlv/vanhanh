@@ -1057,6 +1057,9 @@ span.CodeMirror-selectedtext {
   -moz-box-shadow: 11px 11px 15px 0px rgba(50, 50, 50, 0.75);
   box-shadow: 11px 11px 15px 0px rgba(50, 50, 50, 0.75); }
 
+.Select-clear {
+  display: none; }
+
 .Select-control {
   z-index: 999; }
 

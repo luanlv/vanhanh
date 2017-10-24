@@ -566,7 +566,7 @@ class DOPage extends React.Component {
   
             {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row>
 
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Khách hàng:</b>
                 <Select
                   showSearch
@@ -593,7 +593,7 @@ class DOPage extends React.Component {
                 />
               </Col>
 
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Người yêu cầu:</b>
                 {/*<CompleteInput*/}
                 {/*option={this.state.nguoiyeucau}*/}
@@ -617,7 +617,7 @@ class DOPage extends React.Component {
   
             {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Điểm đi:</b>
                 <SelectPlace
                   multi={true}
@@ -626,7 +626,7 @@ class DOPage extends React.Component {
                 />
               </Col>
 
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
                 <SelectPlace
                   multi = {true}
@@ -637,7 +637,7 @@ class DOPage extends React.Component {
             </Row>}
 
             {/*{(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>*/}
-              {/*<Col span={12}>*/}
+              {/*<Col span={24} sm={12}>*/}
                 {/*<b style={{fontSize: 16}}>Điểm bắt đầu</b>*/}
                 {/*<br/>*/}
                 {/*<Select*/}
@@ -649,7 +649,7 @@ class DOPage extends React.Component {
                   {/*{diembatdauOption}*/}
                 {/*</Select>*/}
               {/*</Col>*/}
-              {/*<Col span={12}>*/}
+              {/*<Col span={24} sm={12}>*/}
                 {/*<b style={{fontSize: 16}}>Điểm trả hàng xa nhất</b>*/}
                 {/*<br/>*/}
                 {/*<Select*/}
@@ -667,7 +667,7 @@ class DOPage extends React.Component {
 
             {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Tỉnh xuất phát:</b>
                 <br/>
                 <Tinh
@@ -675,7 +675,7 @@ class DOPage extends React.Component {
                   handleChange={this.changeTinhXuatPhat}
                 />
               </Col>
-              <Col span={12}>
+              <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
                 <br/>
                 <Tinh
