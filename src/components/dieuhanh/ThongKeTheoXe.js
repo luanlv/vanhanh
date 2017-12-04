@@ -227,6 +227,7 @@ class Home extends React.Component {
                    info(record, this.state.danhsachthauphuObj)
                  }}
                  onChange={this.handleChange}
+                 bordered={true}
           >
             
             <ColumnGroup title="Lệnh điều xe">
@@ -234,18 +235,27 @@ class Home extends React.Component {
                 title="Ngày"
                 key="phongban"
                 render={(text, record) => (
-                  <span>
+                  <span
+                    style={{color: record.quaydau ? "red" : "blue"}}
+                  >
                     {moment(record.date, 'YYYYMMDD').format('DD/MM/YYYY')}
                   </span>
                 )}
               />
-              
+
               <Column
                 title="Mã lệnh"
                 dataIndex="_id"
                 key="_id"
+                render={(text, record) => (
+                  <span
+                    style={{color: record.quaydau ? "red" : "blue"}}
+                  >
+                    {record._id}
+                  </span>
+                )}
               />
-              
+
               <Column
                 title="Biển số xe"
                 dataIndex="xe"
@@ -302,14 +312,37 @@ class Home extends React.Component {
                   </span>
                 )}
               />
-  
-  
+
               <Column
-                title="Trọng tải"
-                dataIndex="trongtai"
+                title="Trọng tải (tấn)"
                 key="trongtai"
+                render={(text, record) => (
+                  <span>
+                    {record.trongtai}
+                  </span>
+                )}
               />
-  
+
+              <Column
+                title="Trọng tải thực"
+                key="trongtaithuc"
+                render={(text, record) => (
+                  <span>
+                    {record.trongtaithuc}
+                  </span>
+                )}
+              />
+
+              <Column
+                title="CBM"
+                // dataIndex="cbm"
+                key="trongtai"
+                render={(text, record) => (
+                  <span>
+                    {record.cbm}
+                  </span>
+                )}
+              />
   
               <Column
                 title="Số điểm rớt"

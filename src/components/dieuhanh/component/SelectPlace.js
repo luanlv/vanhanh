@@ -16,7 +16,7 @@ class SelectPlace extends React.PureComponent {
     let value = this.props.defaultValue
     if(props.multi){
       value = this.props.defaultValue ? this.props.defaultValue.map(el => {
-        el.label = el.name + ' - ' + el.code
+        el.label = el.name //+ ' - ' + el.code
         return el
       }) : []
     } else {
@@ -101,7 +101,7 @@ class SelectPlace extends React.PureComponent {
             })
             alert("Không tìm thấy địa điểm có mã: " + notFound.join(', '))
             places.map(el => {
-              el.label = el.name + " - " + el.code
+              el.label = el.name // + " - " + el.code
               return el
             })
             let value = this.state.value

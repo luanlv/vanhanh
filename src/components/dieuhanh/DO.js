@@ -110,6 +110,8 @@ class DOPage extends React.Component {
         tienphatsinh: 0,
         tienthu: 0,
         trongtai: 1,
+        trongtaithuc: 0,
+        cbm: 0,
         sokm: 50,
         sodiem: 1,
         thauphu: props.thauphu ? (props.quaydau ? props.DOTruoc.thauphu : 102) : 101,
@@ -146,13 +148,17 @@ class DOPage extends React.Component {
     // console.log(this.state.date)
 
 
-    bindAll(this, 'initThauPhu', 'changeDiemxanhat', 'changeDiembatdau', 'initKhachHang', 'changeLaiXe', 'changeTinhXuatPhat', 'changeTinh', 'changeDiemTraHang', 'changeDiemXuatPhat', 'changeNguoiYeuCau', 'changeKhachHang')
-
+    bindAll(this, 'initChinhSua', 'initThauPhu', 'changeDiemxanhat', 'changeDiembatdau', 'initKhachHang', 'changeLaiXe', 'changeTinhXuatPhat', 'changeTinh', 'changeDiemTraHang', 'changeDiemXuatPhat', 'changeNguoiYeuCau', 'changeKhachHang')
+    if(this.state.data._id){
+      this.initChinhSua()
+    }
   }
 
 
   componentWillMount = async () => {
     let that = this
+
+
     const khachhang = await agent.DieuHanh.khachHang()
     let khachhangObj = {}
     if(khachhang){
@@ -167,7 +173,28 @@ class DOPage extends React.Component {
         thauphuObj[el.ma] = el
       })
     }
+
+    let curData;
+    let datacu;
+
+    if(this.state.data._id && !this.props.duyetchinhsua) {
+      const chinhsua = await agent.DieuHanh.chinhsua(this.state.data._id)
+
+      if (chinhsua) {
+        curData = chinhsua.moi
+        datacu = chinhsua.cu
+      } else {
+        curData = this.state.data
+        datacu = this.state.data
+      }
+    } else {
+      curData = this.state.data
+      datacu = this.state.data
+    }
+
     this.setState({
+      data: curData,
+      datacu: datacu,
       khachhang: khachhang,
       nguoiyeucau: nguoiyeucau,
       // diemxuatphat: autofillPlace,
@@ -202,6 +229,9 @@ class DOPage extends React.Component {
         }})
       }
     })
+  }
+
+  initChinhSua = async () => {
   }
 
     initKhachHang = async () => {
@@ -346,6 +376,16 @@ class DOPage extends React.Component {
   }
 
   render() {
+    let minDate = moment().subtract(2, 'days')
+    let cur = parseInt(moment(Date.now()).format('YYYYMMDD'))
+    let select = this.state.data.date ? parseInt(this.state.data.date) : cur
+    let editOk = true
+    if(cur - select >= 2) editOk = false
+    if((cur - select >= 1) && moment().hour() >= 9) {
+      editOk = false
+      minDate = moment().subtract(1, 'days')
+    }
+
     if(!this.state.init) return (
       <div style={{textAlign: 'center', paddingTop: 50}}>
         <Spin  size="large" tip="Đang tải..." />
@@ -375,10 +415,10 @@ class DOPage extends React.Component {
           {this.state.init && <div>
             {<Row>
               <b style={{fontSize: 16}}>Ngày: </b>
-              <DatePicker format="DD-MM-YYYY"
-                          // disabledDate={(current) => {
-                          //    return current && current.valueOf() < moment(Date.now()).add(-1, 'days');
-                          // }}
+              {this.state.data.quaydau && <DatePicker format="DD-MM-YYYY"
+                          disabledDate={(current) => {
+                             return current && current.valueOf() < minDate;
+                          }}
                           onChange={(value) => {this.setState(prev => {
                             return {
                               ...prev,
@@ -389,7 +429,8 @@ class DOPage extends React.Component {
                             }
                           })}}
                           value={moment(this.state.data.date, 'YYYYMMDD')}
-              />
+              />}
+              {!this.state.data.quaydau && <b>{moment(this.state.data.date, 'YYYYMMDD').format('DD/MM/YYYY')}</b>}
             </Row>}
             
             {this.props.quaydau && <Row>
@@ -400,29 +441,29 @@ class DOPage extends React.Component {
               Xe: <b style={{color: 'red'}}>{this.props.DOTruoc.xe}</b>
             </Row>}
             
-            {this.props.tinhtrang < 0 && intersection(role, [101]).length > 0 && <Row>
-              <b style={{fontSize: 16}}>Đội trưởng:</b>
-              <Select
-                showSearch
-                style={{ width: '100%' }}
-                onChange={(val) => {
-                  this.setState(prev => {
-                    return {
-                      ...prev,
-                      data: {
-                        ...prev.data,
-                        doitruong: parseInt(val)
-                      }
-                    }
-                  })
-                }}
-                filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
-              >
-                <Option value={'' + 1012}>Trần Văn Mỹ</Option>
-                <Option value={'' + 1013}>Trần Ngọc Chỉnh</Option>
-              </Select>
-            </Row>
-              }
+            {/*{this.props.tinhtrang < 0 && intersection(role, [101]).length > 0 && <Row>*/}
+              {/*<b style={{fontSize: 16}}>Đội trưởng:</b>*/}
+              {/*<Select*/}
+                {/*showSearch*/}
+                {/*style={{ width: '100%' }}*/}
+                {/*onChange={(val) => {*/}
+                  {/*this.setState(prev => {*/}
+                    {/*return {*/}
+                      {/*...prev,*/}
+                      {/*data: {*/}
+                        {/*...prev.data,*/}
+                        {/*doitruong: parseInt(val)*/}
+                      {/*}*/}
+                    {/*}*/}
+                  {/*})*/}
+                {/*}}*/}
+                {/*filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}*/}
+              {/*>*/}
+                {/*<Option value={'' + 1012}>Trần Văn Mỹ</Option>*/}
+                {/*<Option value={'' + 1013}>Trần Ngọc Chỉnh</Option>*/}
+              {/*</Select>*/}
+            {/*</Row>*/}
+              {/*}*/}
               
             {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row>
               <b style={{fontSize: 16}}>Thầu phụ: </b>
@@ -687,7 +728,7 @@ class DOPage extends React.Component {
 
             {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
-              <Col span={24}>
+              <Col span={24} sm={8}>
                 <b style={{fontSize: 16}}>Trọng tải (tấn):</b>
                 <InputNumber style={{width: '100%'}} size="large"
                              value={this.state.data.trongtai}
@@ -718,6 +759,67 @@ class DOPage extends React.Component {
                 />
               </Col>
 
+              <Col span={24} sm={8}>
+                <b style={{fontSize: 16}}>Trọng tải thực (kg) :</b>
+                <InputNumber style={{width: '100%'}} size="large"
+                             value={this.state.data.trongtaithuc}
+                             min={0} max={20000}
+                             onChange={(value) => {
+                               if(!isNaN(parseFloat(value)) || value === '') {
+                                 this.setState(prev => {
+                                   return {
+                                     ...prev,
+                                     data: {
+                                       ...prev.data,
+                                       trongtaithuc: value
+                                     }
+                                   }
+                                 })
+                               } else {
+                                 this.setState(prev => {
+                                   return {
+                                     ...prev,
+                                     data: {
+                                       ...prev.data,
+                                       trongtaithuc: 0
+                                     }
+                                   }
+                                 })
+                               }
+                             }}
+                />
+              </Col>
+
+              <Col span={24} sm={8}>
+                <b style={{fontSize: 16}}>CBM (khối):</b>
+                <InputNumber style={{width: '100%'}} size="large"
+                             value={this.state.data.cbm}
+                             min={0} max={5000}
+                             onChange={(value) => {
+                               if(!isNaN(parseFloat(value)) || value === '') {
+                                 this.setState(prev => {
+                                   return {
+                                     ...prev,
+                                     data: {
+                                       ...prev.data,
+                                       cbm: value
+                                     }
+                                   }
+                                 })
+                               } else {
+                                 this.setState(prev => {
+                                   return {
+                                     ...prev,
+                                     data: {
+                                       ...prev.data,
+                                       cbm: 1
+                                     }
+                                   }
+                                 })
+                               }
+                             }}
+                />
+              </Col>
            
             </Row>}
 
@@ -790,7 +892,7 @@ class DOPage extends React.Component {
               >
                 Chọn lái xe & xe
               </Button>}
-              {this.props.edit && <Button type="primary"
+              {editOk && this.props.edit && <Button type="primary"
                                           style={{fontSize: 16}}
                                           onClick={() => {
                                             if(check(gThis.state.data)) {
@@ -810,7 +912,32 @@ class DOPage extends React.Component {
                 Cập nhập
               </Button>
               }
-              
+
+
+              {!editOk && this.props.edit &&
+              <div>
+                {!this.props.duyetchinhsua && <Button type="primary"
+                                                      style={{fontSize: 16}}
+                                                      onClick={() => {
+                                                        if(check(gThis.state.data)) {
+                                                          agent.DieuHanh.capnhapDO2({cu: gThis.state.datacu, moi: gThis.state.data})
+                                                            .then(res => {
+                                                              message.success("Cập nhập thành công")
+                                                              // this.context.router.replace('/dieuhanh');
+                                                              this.props.success()
+                                                            })
+                                                            .catch(err => {
+                                                              message.error("Cập nhập that bai")
+                                                            })
+                                                        }
+                                                      }}
+                >
+                  Cập nhập (quá hạn)
+                </Button>}
+                {/*<br/>*/}
+              </div>
+              }
+
             </Row>
           </div> }
         </div>

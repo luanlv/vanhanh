@@ -107,7 +107,7 @@ class App extends React.Component {
                   <Menu theme="dark"
                         mode={this.state.mode}
                         selectedKeys={[this.props.name]}
-                        defaultOpenKeys={['lenhdieuxe', 'thongke', 'thuquy']}
+                        defaultOpenKeys={['duyetchiphi', 'lenhdieuxe', 'thongke', 'thuquy', 'duyetchinhsua']}
                   >
                     <Menu.Item key="Dashboard">
                       <Link to="/">
@@ -128,6 +128,45 @@ class App extends React.Component {
 
                       {/*<Menu.Item key="lenhdieuxe3">*/}
                         {/*<Link to="#" >Lịch sử</Link>*/}
+                      {/*</Menu.Item>*/}
+
+                    </SubMenu>}
+
+                    {(intersection(role, [1004, 1005]).length > 0) && <SubMenu
+                      key="duyetchiphi"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Chi phí</span></span>}
+                    >
+                      {(intersection(role, [1004]).length > 0) && <Menu.Item key="duyetchiphi1">
+                        <Link to={"duyetchiphi"} >Duyệt chi phí (Điều hành)</Link>
+                      </Menu.Item>}
+
+                      {(intersection(role, [1005]).length > 0) && <Menu.Item key="duyetchiphi2">
+                        <Link to={"duyetchiphiketoan"} >Chi phí (Kế toán)</Link>
+                      </Menu.Item>}
+
+                      {/*{(intersection(role, [1005, 1004]).length > 0) && <Menu.Item key="duyetchiphi3">*/}
+                        {/*<Link to={"baocaochiphi"} >Báo cáo</Link>*/}
+                      {/*</Menu.Item>}*/}
+                      {/*<Menu.Item key="lenhdieuxe3">*/}
+                      {/*<Link to="#" >Lịch sử</Link>*/}
+                      {/*</Menu.Item>*/}
+
+                    </SubMenu>}
+
+
+                    {(intersection(role, [1006]).length > 0) && <SubMenu
+                      key="duyetchinhsua"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Chỉnh sửa lệnh</span></span>}
+                    >
+                      <Menu.Item key="duyetchinhsua1">
+                        <Link to={"duyetchinhsua"} >Lệnh chờ duyệt</Link>
+                      </Menu.Item>
+
+                      {/*{(intersection(role, [1005, 1004]).length > 0) && <Menu.Item key="duyetchiphi3">*/}
+                      {/*<Link to={"baocaochiphi"} >Báo cáo</Link>*/}
+                      {/*</Menu.Item>}*/}
+                      {/*<Menu.Item key="lenhdieuxe3">*/}
+                      {/*<Link to="#" >Lịch sử</Link>*/}
                       {/*</Menu.Item>*/}
 
                     </SubMenu>}

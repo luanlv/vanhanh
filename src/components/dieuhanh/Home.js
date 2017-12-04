@@ -73,7 +73,7 @@ class Home extends React.Component {
       khachhang: [],
       khachhangObj: {},
     }
-    console.log(moment(Date.now()).format('YYYYMMDD'))
+    // console.log(moment(Date.now()).format('YYYYMMDD'))
 
     this.changeDate = this.changeDate.bind(this)
     this.changeDate2 = this.changeDate2.bind(this)
@@ -91,7 +91,15 @@ class Home extends React.Component {
   }
 
   componentDidMount(){
+    let that = this
     this.context.socket.on('update', this.onUpdate);
+    that.reload = setInterval(function(){
+      that.setState({})
+    }, 60000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.reload)
   }
 
 
@@ -111,11 +119,10 @@ class Home extends React.Component {
       khachhangObj: khachhangObj,
       init: true
     })
-
   }
 
   initDO = async (date) => {
-    console.log('init DO')
+    // console.log('init DO')
     const DOs = await agent.DieuHanh.getDOs(date);
     this.setState({
       DOs: DOs,
@@ -195,13 +202,17 @@ class Home extends React.Component {
     let huy = []
 
 
-    let cur = parseInt(moment(Date.now()).subtract(1, 'days').format('YYYYMMDD'))
-    let select = this.state.date
+    let cur = parseInt(moment(Date.now()).format('YYYYMMDD'))
+    let select = parseInt(this.state.date)
     let editOk = true
-    if(select < cur) editOk = false
-    if(select === cur && moment().hour() >= 11) editOk = false
-
-    // console.log(editOk)
+    if(cur - select >= 2) editOk = false
+    // if((cur - select >= 1) && moment().hour() >= 9) editOk = false
+    if((cur - select >= 1) && moment().hour() >= 9) editOk = false
+    // editOk = true;
+    // alert(moment().hour() >= 6)
+    // console.log(select)
+    // console.log(cur)
+    // console.log(select == cur)
 
     this.state.DOs.map((el, index) => {
       if(el.laixe === -1 || el.tinhtrang === 0){
@@ -239,13 +250,19 @@ class Home extends React.Component {
         <h2 id="header" style={{textAlign: 'center', color: 'red'}}>{moment(this.state.date).format('DD-MM-YYYY')}
           <Status date={parseInt(this.state.date)} />
         </h2>
-        <span style={{marginRight: 5}}>
-          {editOk && <Button className="newDO" type="primary" onClick={this.showModal1}>COLOMBUS</Button>}
-        </span>
 
-        <span style={{marginRight: 5}}>
-          {editOk && <Button className="newDO" type="primary" onClick={this.thauphu}>Thầu phụ</Button>}
-        </span>
+        {editOk && <span style={{marginRight: 5}}>
+          <Button className="newDO" type="primary" onClick={this.showModal1}>COLOMBUS</Button>
+        </span>}
+
+        {editOk && <span style={{marginRight: 5}}>
+          <Button className="newDO" type="primary" onClick={this.thauphu}>Thầu phụ</Button>
+        </span>}
+
+        {!editOk && <span style={{marginRight: 5}}>
+          <Button className="newDO" type="danger" >Hết hạn</Button>
+        </span>}
+
         <span style={{float: 'right'}}>
           <DatePicker format="DD-MM-YYYY"
                   onChange={this.changeDate}
@@ -292,8 +309,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
 
@@ -306,7 +327,7 @@ class Home extends React.Component {
 
                   </Row>
 
-                  {editOk && <div>
+                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
 
                     <Button type="primary"
                             onClick={() => this.chonLaiXe(el)}
@@ -353,7 +374,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -361,8 +382,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
                     <Col span={12} >
@@ -373,7 +398,7 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  {editOk && <div>
+                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) &&  <div>
                     <Popconfirm title="Xác nhận?" onConfirm={() => {
                       agent.DieuHanh.nhanLenhThay(el)
                       .then(res => {
@@ -436,7 +461,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -444,8 +469,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
                     <Col span={12} >
@@ -456,7 +485,7 @@ class Home extends React.Component {
                     </Col>
                   </Row>
 
-                  {editOk && <div>
+                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
                     <Popconfirm title="Xác nhận?" onConfirm={() => {
                       agent.DieuHanh.daGiaoHang(el)
                       .then(res => {
@@ -511,9 +540,17 @@ class Home extends React.Component {
 
                     <span style={{margin: '0 5px'}}>|</span>
 
-                    <Button
-                      onClick={() => this.chinhsua(el)}
-                    >Chỉnh sửa</Button>
+                    {editOk && <div>
+                      <Button
+                        onClick={() => this.chinhsua(el)}
+                      >Chỉnh sửa</Button>
+                    </div> }
+
+                    {!editOk && <div>
+                      <Button
+                        onClick={() => this.chinhsua(el)}
+                      >Chỉnh sửa (qh)</Button>
+                    </div> }
                   </div>}
 
                 </div>
@@ -549,8 +586,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
                     <Col span={12} >
@@ -560,12 +601,21 @@ class Home extends React.Component {
                       })}
                     </Col>
                   </Row>
-
-                  {editOk && <div>
+                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
+                  {editOk &&
                     <Button
                       onClick={() => this.chinhsua(el)}
-                    >Chỉnh sửa</Button>
-                  </div> }
+                    >Chỉnh sửa</Button>}
+
+                    {!editOk &&
+                      <Button
+                        onClick={() => this.chinhsua(el)}
+                      >Chỉnh sửa (quá hạn)</Button>}
+
+                    {!el.quaydau && el.lenhtruoc === 0 && <Button type="danger"
+                                                                  onClick={() => this.lenhquaydau(el)}
+                    >Tạo lệnh quay đầu</Button>}
+                  </div>}
                 </div>
               )
             })}
@@ -592,7 +642,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -600,8 +650,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
                     <Col span={12} >
@@ -611,11 +665,12 @@ class Home extends React.Component {
                       })}
                     </Col>
                   </Row>
-
-                  {editOk && <div>
-                    <Button
-                      onClick={() => this.chinhsua(el)}
-                    >Chỉnh sửa</Button>
+                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
+                    {editOk && <div>
+                      <Button
+                        onClick={() => this.chinhsua(el)}
+                      >Chỉnh sửa</Button>
+                    </div>}
                   </div>}
                 </div>
               )
@@ -643,7 +698,7 @@ class Home extends React.Component {
                       Điểm xuất phát: <b style={{color: 'red'}}>{el.diemxuatphat.length}</b> điểm
                       <div style={{padding: 5}}>
                         {el.diemxuatphat.map((p, index) => {
-                          console.log(p)
+                          // console.log(p)
                           return (
                             <div key={index} style={{color: el.diembatdau === index ? "red": "black", fontSize: 12}}><b>+ {p.name} {el.diembatdau === index ? "(*)": ""}</b></div>
                           )
@@ -651,8 +706,12 @@ class Home extends React.Component {
                       </div>
                       Trọng tải: <b style={{color: 'red'}}>{el.trongtai}</b> Tấn
                       <br/>
+                      Trọng tải thực: <b style={{color: 'red'}}>{el.trongtaithuc}</b> Kg
+                      <br/>
+                      CBM: <b style={{color: 'red'}}>{el.cbm}</b> Khối
+                      <br/>
                       <div>
-                        Ghi chú: <b>{el.ghichu}</b>
+                        Ghi chú: <pre style={{background: 'rgba(100, 100, 100, 0.05)'}}>{el.ghichu}</pre>
                       </div>
                     </Col>
                     <Col span={12} >
@@ -776,7 +835,7 @@ class Home extends React.Component {
   }
 
   chinhsua = (data) => {
-    console.log(data)
+    // console.log(data)
     this.setState({
       visible: true,
       // quaydau: true,

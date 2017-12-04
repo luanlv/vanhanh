@@ -47,7 +47,7 @@ class StackedBarChart extends React.Component {
     let dataObj = []
     this.state.DOs.forEach(lenh => {
       if(!dataObj[lenh.date]){
-        dataObj[lenh.date] = {name: moment(lenh.date, 'YYYYMMDD').format('DD/MM/YY'), CLB: 0, TP: 0}
+        dataObj[lenh.date] = {date: lenh.date, name: moment(lenh.date, 'YYYYMMDD').format('DD/MM/YY'), CLB: 0, TP: 0}
         if(lenh.thauphu === 101){
           dataObj[lenh.date].CLB = dataObj[lenh.date].CLB + 1
         } else {
@@ -65,6 +65,8 @@ class StackedBarChart extends React.Component {
     for(var key in dataObj) {
       dataChart.push(dataObj[key])
     }
+    dataChart.sort((a,b) => {return a.date > b.date})
+    console.log(dataChart)
     return (
       <BarChart width={1200} height={600} data={dataChart}
                 margin={{top: 20, right: 30, left: 20, bottom: 5}}>

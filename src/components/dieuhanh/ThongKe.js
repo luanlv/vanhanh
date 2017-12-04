@@ -187,20 +187,13 @@ class Home extends React.Component {
           format={'DD/MM/YYYY'}
           onChange={this.onChangeRange}
         />
-        {/*<Select*/}
-          {/*style={{width: 250}}*/}
-          {/*value={this.state.khachhang}*/}
-          {/*onChange={this.changeKhachHang}*/}
-        {/*>*/}
-          {/*<Option key="tatca" value="tatca">Tất cả { this.state.khachhang === 'tatca' && <span style={{color: 'red', fontWeight: 'bold'}}>({DOs.length})</span> }</Option>*/}
-          {/*{ this.state.danhsachkhachhang.map((el, idx) => {*/}
-              {/*let length = DOs.filter((e) => {return e.khachhang == el.code}).length*/}
-              {/*return (<Option key={idx} value={el.code}>{el.value} { length > 0 && <span style={{color: 'red', fontWeight: 'bold'}}>({length})</span> }</Option>)*/}
-            {/*})*/}
-          {/*}*/}
-
-
-        {/*</Select>*/}
+        <Select
+          style={{width: 250}}
+          value={this.state.khachhang}
+          onChange={this.changeKhachHang}
+        >
+          <Option key="tatca" value="tatca">Tất cả { this.state.khachhang === 'tatca' && <span style={{color: 'red', fontWeight: 'bold'}}>({DOs.length})</span> }</Option>
+        </Select>
         <span> | </span>
         <Input style={{width: 200}}
                placeholder="Mã lệnh"
@@ -231,14 +224,18 @@ class Home extends React.Component {
                    info(record, this.state.danhsachthauphuObj)
                  }}
                  onChange={this.handleChange}
+                 bordered={true}
           >
             
-            <ColumnGroup title="Lệnh điều xe">
+            <ColumnGroup title="Lệnh điều xe"
+            >
               <Column
                 title="Ngày"
                 key="phongban"
                 render={(text, record) => (
-                  <span>
+                  <span
+                    style={{color: record.quaydau ? "red" : "blue"}}
+                  >
                     {moment(record.date, 'YYYYMMDD').format('DD/MM/YYYY')}
                   </span>
                 )}
@@ -248,6 +245,13 @@ class Home extends React.Component {
                 title="Mã lệnh"
                 dataIndex="_id"
                 key="_id"
+                render={(text, record) => (
+                  <span
+                    style={{color: record.quaydau ? "red" : "blue"}}
+                  >
+                    {record._id}
+                  </span>
+                )}
               />
               
               <Column
@@ -309,9 +313,34 @@ class Home extends React.Component {
   
   
               <Column
-                title="Trọng tải"
-                dataIndex="trongtai"
+                title="Trọng tải (tấn)"
                 key="trongtai"
+                render={(text, record) => (
+                  <span>
+                    {record.trongtai}
+                  </span>
+                )}
+              />
+
+              <Column
+                title="Trọng tải thực"
+                key="trongtaithuc"
+                render={(text, record) => (
+                  <span>
+                    {record.trongtaithuc}
+                  </span>
+                )}
+              />
+
+              <Column
+                title="CBM"
+                // dataIndex="cbm"
+                key="trongtai"
+                render={(text, record) => (
+                  <span>
+                    {record.cbm}
+                  </span>
+                )}
               />
   
   

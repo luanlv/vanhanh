@@ -3,13 +3,13 @@ import _superagent from 'superagent';
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
-// const API_ROOT = 'http://localhost:8000';
-// const API_ROOT_SOCKET = 'http://localhost:8001';
-
+const API_ROOT = 'http://localhost:8000';
+const API_ROOT_SOCKET = 'http://localhost:8001';
+//
 // const API_ROOT = 'http://192.168.1.100:8000';
 
-const API_ROOT = 'http://api.colombus.vn';
-const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
+// const API_ROOT = 'http://api.colombus.vn';
+// const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
 
 const encode = encodeURIComponent;
 const responseBody = res => res.body;
@@ -119,6 +119,8 @@ const LaiXe = {
     requests.get(`/laixe/autofill/all`),
   changePass: data =>
     requests.post(`/laixe/users/password`, {data}),
+  daKhaiBao: (start, end, laixe) =>
+    requests.get(`/laixe/do/dakhaibao?start=${start}&end=${end}&laixe=${laixe}`),
 }
 
 const IT = {
@@ -171,6 +173,8 @@ const DieuHanh = {
     requests.post('/dieuhanh/autofill/diadiemtheocode', {data}),
   capnhapDO: data =>
     requests.post('/dieuhanh/do/capnhap', {data}),
+  capnhapDO2: data =>
+    requests.post('/dieuhanh/do/capnhap2', {data}),
   chonlaixe: data =>
     requests.post('/dieuhanh/do/chonlaixe', {data}),
   nhanLenhThay: data =>
@@ -209,6 +213,8 @@ const DieuHanh = {
     requests.post(`/themthauphu`, data),
   khachHang: () =>
     requests.get('/khachhang'),
+  dieuXe: () =>
+    requests.get('/dieuxe'),
   danhSachThauPhu: () =>
     requests.get('/danhsachthauphu'),
   themLaiXe: data =>
@@ -227,6 +233,22 @@ const DieuHanh = {
     requests.get(`/dieuhanh/do/thongketheothauphu?start=${start}&end=${end}&thauphu=${thauphu}`),
   getThongKeTheoKhachHang: (start, end, khachhang) =>
     requests.get(`/dieuhanh/do/thongketheokhachhang?start=${start}&end=${end}&khachhang=${khachhang}`),
+  duyetChiPhi: chiphi =>
+    requests.post(`/dieuhanh/do/duyetchiphi`, {chiphi}),
+  capNhapChiPhi: chiphi =>
+    requests.post(`/dieuhanh/do/capnhapchiphi`, {chiphi}),
+  keToanDuyetChiPhi: chiphi =>
+    requests.post(`/dieuhanh/do/ketoanduyetchiphi`, {chiphi}),
+  keToanHuyDuyetChiPhi: chiphi =>
+    requests.post(`/dieuhanh/do/ketoanhuyduyetchiphi`, {chiphi}),
+  keToanDuyetChinhSua: data =>
+    requests.post(`/dieuhanh/do/ketoanduyetchinhsua`, {data}),
+  keToanHuyDuyetChinhSua: data =>
+    requests.post(`/dieuhanh/do/ketoanhuyduyetchinhsua`, {data}),
+  chinhsua: (id) =>
+    requests.get(`/dieuhanh/do/chinhsua/${id}`),
+  danhsachchinhsua: () =>
+    requests.get(`/dieuhanh/do/chinhsua`)
 }
 
 

@@ -76,12 +76,12 @@ class CreatePlace extends React.Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          Mã điểm:
-          <Input
-            value={this.state.ma}
-            onChange={this.changeMaDiem}
-          />
-          <br/>
+          {/*Mã điểm:*/}
+          {/*<Input*/}
+            {/*value={this.state.ma}*/}
+            {/*onChange={this.changeMaDiem}*/}
+          {/*/>*/}
+          {/*<br/>*/}
           Tên điểm:
           <Input
             onChange={this.changeTenDiem}
