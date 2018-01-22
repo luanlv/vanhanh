@@ -3,13 +3,15 @@ import _superagent from 'superagent';
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
-const API_ROOT = 'http://localhost:8000';
-const API_ROOT_SOCKET = 'http://localhost:8001';
-//
-// const API_ROOT = 'http://192.168.1.100:8000';
+// const API_ROOT = 'http://localhost:8000';
+// const API_ROOT_SOCKET = 'http://localhost:8001';
 
-// const API_ROOT = 'http://api.colombus.vn';
-// const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
+//
+// const API_ROOT = 'http://192.168.1.21:8000';
+// const API_ROOT_SOCKET = 'http://192.168.1.21:8001';
+
+const API_ROOT = 'http://api.colombus.vn';
+const API_ROOT_SOCKET = 'http://api.colombus.vn:8001';
 
 const encode = encodeURIComponent;
 const responseBody = res => res.body;
@@ -145,6 +147,8 @@ const DieuHanh = {
     requests.get(`/dieuhanh/do/xoa/${id}`),
   doById: (id) =>
     requests.get(`/dieuhanh/do/id/${id}`),
+  tatCaDiaChi: (page) =>
+    requests.get(`/tatcadiachi/${page}`),
   listDOchuaxacnhan: () =>
     requests.get('/dieuhanh/do/chuaxacnhan'),
   getDOs: (date) =>
@@ -245,6 +249,8 @@ const DieuHanh = {
     requests.post(`/dieuhanh/do/ketoanduyetchinhsua`, {data}),
   keToanHuyDuyetChinhSua: data =>
     requests.post(`/dieuhanh/do/ketoanhuyduyetchinhsua`, {data}),
+  capnhapdiachi: data =>
+    requests.post(`/dieuhanh/do/capnhapdiachi`, {data}),
   chinhsua: (id) =>
     requests.get(`/dieuhanh/do/chinhsua/${id}`),
   danhsachchinhsua: () =>

@@ -17,10 +17,12 @@ import ThongKeTheoThauPhu from './components/dieuhanh/ThongKeTheoThauPhu';
 import ThongKeTheoKhachHang from './components/dieuhanh/ThongKeTheoKhachHang';
 import BieuDo from './components/dieuhanh/BieuDo';
 import HomeDieuHanh from './components/dieuhanh/Home';
+import SuaDiaChi from './components/dieuhanh/SuaDiaChi';
 import DieuXe from './components/dieuhanh/DO';
 import PhongBan from './components/nhansu/PhongBan';
 import NhanVien from './components/nhansu/NhanVien';
 import ThuChi from './components/thuquy/Quy';
+import DoanhThu from './components/dieuhanh/DoanhThu';
 
 ReactDOM.render((
   <LocaleProvider locale={enUS}>
@@ -45,7 +47,11 @@ ReactDOM.render((
           <Route path="duyetchiphiketoan" component={DuyetChiPhiKeToan} />
 
           <Route path="duyetchinhsua" component={DuyetChinhSua} />
-          
+
+          <Route path="suadiachi" component={SuaDiaChi} />
+
+          <Route path="doanhthu" component={DoanhThu} />
+
         </Route>
       </Router>
     </Provider>

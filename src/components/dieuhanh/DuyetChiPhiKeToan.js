@@ -208,7 +208,14 @@ class Home extends React.Component {
                      bordered
                      pagination={{pageSize: 100}}
                      onRowDoubleClick={(record, index, event) => {
-                       this.info(record, this.state)
+                       // this.info(record, this.state)
+                       let that = this;
+                       that.setState({
+                         chiphi: record
+                       }, () => {
+                         // console.log(that.state.chiphi)
+                         that.chinhsua()
+                       })
                      }}
                      onChange={this.handleChange}
               >
@@ -511,7 +518,14 @@ class Home extends React.Component {
                      bordered
                      pagination={{pageSize: 100}}
                      onRowDoubleClick={(record, index, event) => {
-                       this.info(record, this.state)
+                       // this.info(record, this.state)
+                       let that = this;
+                       that.setState({
+                         chiphi: record
+                       }, () => {
+                         // console.log(that.state.chiphi)
+                         that.chinhsua()
+                       })
                      }}
                      onChange={this.handleChange}
               >
@@ -817,7 +831,14 @@ class Home extends React.Component {
                      bordered
                      pagination={{pageSize: 100}}
                      onRowDoubleClick={(record, index, event) => {
-                       this.info(record, this.state)
+                       // this.info(record, this.state)
+                       let that = this;
+                       that.setState({
+                         chiphi: record
+                       }, () => {
+                         // console.log(that.state.chiphi)
+                         that.chinhsua()
+                       })
                      }}
                      onChange={this.handleChange}
               >
@@ -1251,6 +1272,7 @@ class Home extends React.Component {
                  onClick={() => {
                    let that = this;
                    if(this.state.ghichuketoan) chiphi.ghichuketoan = this.state.ghichuketoan
+
                    agent.DieuHanh.keToanDuyetChiPhi(chiphi)
                      .then(res => {
                        message.success('Duyệt thành công')
@@ -1258,7 +1280,7 @@ class Home extends React.Component {
                        that.init()
                      })
                  }}
-              >Duyệt</Button>}
+              >Duyệt chi phí</Button>}
 
               { chiphi.dieuhanh && !chiphi.ketoan && <Button type="danger"
                                                              style={{float: 'right', marginRight: 20}}
@@ -1320,6 +1342,215 @@ class Home extends React.Component {
   }
 
   chinhsua = () => {
+    let that = this;
+    let chiphi = this.state.chiphi
+    let chiphilaixe = chiphi.sodautinh > 0 ? (Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac)
+      : (Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyen)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac)
+
+    let chiphidieuhanh = chiphi.sodautinh > 0 ? (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+      : (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyendh)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+    // console.log(chiphidieuhanh)
+    let modal = Modal.info({
+      width: 1200,
+      title: `Chi phí chuyến ${this.state.chiphi.mapDO[0]._id}`,
+      content: (
+        <div>
+          <div>
+            <div>
+              {/*<Popconfirm title={"Duyệt chi phí chuyến: " + chiphidieuhanh + " đ"} okText="Xác nhận" cancelText="Hủy">*/}
+              {!this.state.chiphi.ketoan && <Button type="primary"
+                                                      style={{float: 'right'}}
+                                                      onClick={() => {
+                                                        let that = this;
+                                                        let chiphi = this.state.chiphi
+                                                        // chiphi.ghichudieuhanh = this.state.ghichudieuhanh
+                                                        chiphi.kmkt = true
+                                                        chiphi.giadaukt = true
+                                                        chiphi.cauduongkt = true
+                                                        chiphi.sochuyenkt = true
+                                                        chiphi.sodautinhkt = true
+                                                        chiphi.bocxepkt = true
+                                                        chiphi.luudemkt = true
+                                                        chiphi.luatkt = true
+                                                        chiphi.phikhackt = true
+                                                        chiphi.ketoan = true;
+                                                        chiphi.ghichuketoan = this.state.ghichuketoan
+                                                        this.setState({chiphi: chiphi}, () => {
+                                                          agent.DieuHanh.keToanDuyetChiPhi(this.state.chiphi)
+                                                            .then(res => {
+                                                              message.success('Duyệt thành công')
+                                                              // this.init()
+                                                              modal.destroy()
+                                                              that.init()
+                                                              // that.chinhsua()
+                                                            })
+                                                        })
+                                                        // this.state.chiphi.dinhmuc = this.state.danhsachxeObj[this.state.chiphi.mapDO[0].bks].dm;
+
+                                                      }}
+              >Duyệt chi phi</Button>}
+              {this.state.chiphi.ketoan &&
+              <span style={{float: "right", color: "green"}}>
+                  Đã duyệt
+                </span>
+              }
+              {/*</Popconfirm>*/}
+            </div>
+            Lái xe: <b style={{color: 'red'}}>{this.state.danhsachlaixeObj[this.state.chiphi.laixe].ten}</b>
+            <br/>
+            Biển kiểm soát: <b style={{color: 'red'}}>{this.state.chiphi.mapDO[0].xe}</b>
+            <br/>
+            <table style={{width: "100%",  border: '1px solid #ddd', borderCollapse: 'collapse'}}>
+              <tr>
+                <th style={{width: '15%', border: '1px solid #ddd'}}></th>
+                <th style={{width: '30%', border: '1px solid #ddd'}}>Lái xe</th>
+                <th style={{width: '30%', border: '1px solid #ddd'}}>Điều hành</th>
+                <th style={{width: '20%', border: '1px solid #ddd'}}>Kế toán</th>
+              </tr>
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Km chạy</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.km.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.kmdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Giá dầu</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.giadau.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.giadaudh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Số đầu tỉnh</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodautinh}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodautinhdh}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Số điểm</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodiem}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodiemdh}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tiền cầu đường</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.cauduong.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.cauduongdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tiền bốc xếp</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.bocxep.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.bocxepdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tiền lưu đêm</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luudem.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luudemdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tiền luật</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luat.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luatdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{ border: '1px solid #ddd'}}>Chi phí khác</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.phikhac.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.phikhacdh.toLocaleString()}</b></td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}></b></td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Ghi chú:</td>
+                <td style={{border: '1px solid #ddd', padding: 5}}><pre>{this.state.chiphi.ghichu}</pre></td>
+                <td style={{border: '1px solid #ddd', padding: 5}}><pre>{this.state.chiphi.ghichudieuhanh}</pre></td>
+
+                <td style={{border: '1px solid #ddd'}}>
+                  <textarea
+                    placeholder=""
+                    row="2"
+                    rows="4"
+                    style={{width: '100%', padding: 5}}
+                    defaultValue={chiphi.ghichuketoan || this.state.ghichuketoan}
+                    onChange={(e) => {
+                      let value = e.target.value
+                      this.setState({
+                        ghichuketoan: value
+                      })
+                    }}
+                  />
+                </td>
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tổng chi phí</td>
+                <td style={{border: '1px solid #ddd'}}>
+                  <div style={{textAlign: 'center'}}><b style={{color: 'red'}}>{chiphilaixe.toLocaleString()}</b> đ</div>
+                </td>
+                <td style={{border: '1px solid #ddd'}}>
+                  <div style={{textAlign: 'center'}}><b style={{color: 'red'}}>{chiphidieuhanh.toLocaleString()}</b> đ</div>
+                </td>
+                <td style={{border: '1px solid #ddd'}}>
+                </td>
+              </tr>
+
+            </table>
+
+            <br/>
+            <br/>
+            <br/>
+            <div>
+              <Button type="default"
+                      onClick={() => this.xemLenh(this.state.chiphi.do)}
+              >Chi tiết chuyến chạy</Button>
+
+              <Button type="primary"
+                      style={{float: 'right'}}
+                      onClick={() => {
+                        let that = this;
+                        // this.state.chiphi.dinhmuc = this.state.danhsachxeObj[this.state.chiphi.mapDO[0].bks].dm;
+                        let chiphi = this.state.chiphi
+                        chiphi.dieuhanh = false
+                        chiphi.ghichuketoan = this.state.ghichuketoan
+                        this.setState({chiphi: chiphi}, () => {
+                          agent.DieuHanh.keToanDuyetChiPhi(this.state.chiphi)
+                            .then(res => {
+                              message.success('Cập nhập thành công')
+                              // this.init()
+                              modal.destroy()
+                              that.init()
+                              // that.chinhsua()
+                            })
+                        })
+
+                      }}
+              >Không duyệt</Button>
+
+            </div>
+            <br/>
+            <br/>
+          </div>
+        </div>
+      ),
+      onOk() {},
+      okText: "Đóng",
+      afterClose() {
+        alert('Close !!!')
+      }
+    });
+  }
+
+  chinhsua2 = () => {
     let that = this;
     let modal = Modal.info({
       width: 800,

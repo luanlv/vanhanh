@@ -208,6 +208,19 @@ class Home extends React.Component {
     if(cur - select >= 2) editOk = false
     // if((cur - select >= 1) && moment().hour() >= 9) editOk = false
     if((cur - select >= 1) && moment().hour() >= 9) editOk = false
+
+    if(moment().day() === 0 && cur - select <= 1){
+      editOk = true;
+    }
+
+    if(moment().day() === 1 && cur - select <= 2 && moment().hour() < 9){
+      editOk = true;
+    }
+
+    if(cur === 20180103 && this.props.user.ma === 1013){
+      editOk = true;
+    }
+
     // editOk = true;
     // alert(moment().hour() >= 6)
     // console.log(select)
@@ -263,14 +276,15 @@ class Home extends React.Component {
           <Button className="newDO" type="danger" >Hết hạn</Button>
         </span>}
 
-        <span style={{float: 'right'}}>
-          <DatePicker format="DD-MM-YYYY"
-                  onChange={this.changeDate}
-                  value={moment(this.state.date, 'YYYYMMDD')}
-          />
-        </span>
-
-
+        <div>
+          <div style={{float: 'right'}}>
+            <DatePicker format="DD-MM-YYYY"
+                    onChange={this.changeDate}
+                    value={moment(this.state.date, 'YYYYMMDD')}
+            />
+          </div>
+          <div style={{clear: 'both'}}/>
+        </div>
         <hr
           style={{margin: 10}}
         />

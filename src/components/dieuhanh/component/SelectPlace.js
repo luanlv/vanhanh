@@ -54,7 +54,7 @@ class SelectPlace extends React.PureComponent {
   
   addNew(obj){
     let value = this.state.value
-    obj.label = obj.name + ' - ' + obj.code;
+    obj.label = obj.name ;
     if(this.props.multi){
       value.push(obj)
     } else {

@@ -10,7 +10,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Row, Col, Input, Button, message, Select, AutoComplete, InputNumber, Spin, DatePicker, Modal} from 'antd'
+import {Row, Col, Input, Button, message, Select, AutoComplete, Radio, InputNumber, Spin, DatePicker, Modal} from 'antd'
 
 import agent from '../../agent';
 import { connect } from 'react-redux';
@@ -33,6 +33,7 @@ import SelectPlace from './component/SelectPlace'
 import 'react-select/dist/react-select.css';
 import Tinh from './component/Tinh'
 import tinhObj from '../tinhObj.json'
+import tinhArr from '../tinhArr.json'
 import CreateKhachHang from './component/CreateKhachHang'
 import CreateThauPhu from './component/CreateThauPhu'
 
@@ -104,12 +105,16 @@ class DOPage extends React.Component {
     let dongdo = [{"search":"kho dong do kho dong do","__v":0,"tinh":{"name":"Hà Nội","slug":"ha-noi","type":"thanh-pho","name_with_type":"Thành phố Hà Nội","code":"01"},"code":"Kho Đông Đô","name":"Kho Đông Đô","_id":"59c326b820a5ea164e60b978"}]
     this.state = {
       data: (props.tinhtrang >= 0 || props.edit === true) ? data : {
+        loai: '',
+        tinh: [],
+        sotinh: 0,
+
         lenhtruoc: props.quaydau ? props.DOTruoc._id : 0,
         doitruong:  madoitruong,
         quaydau: this.props.quaydau || false,
         tienphatsinh: 0,
         tienthu: 0,
-        trongtai: 1,
+        // trongtai: 1,
         trongtaithuc: 0,
         cbm: 0,
         sokm: 50,
@@ -120,7 +125,7 @@ class DOPage extends React.Component {
         xe: props.quaydau ? props.DOTruoc.xe : '',
         laixe: props.quaydau ? props.DOTruoc.laixe : '',
         tinhxuatphat: tinhObj["01"],
-        tinhtrahang: tinhObj["01"],
+        tinhtrahang: tinhObj["00"],
         ghichu: '',
         date: parseInt(props.date),
         diemxuatphat: props.user.ma === 1013 ? dongdo : [],
@@ -379,12 +384,28 @@ class DOPage extends React.Component {
     let minDate = moment().subtract(2, 'days')
     let cur = parseInt(moment(Date.now()).format('YYYYMMDD'))
     let select = this.state.data.date ? parseInt(this.state.data.date) : cur
+
     let editOk = true
     if(cur - select >= 2) editOk = false
     if((cur - select >= 1) && moment().hour() >= 9) {
       editOk = false
       minDate = moment().subtract(1, 'days')
     }
+
+    if(moment().day() === 0 && cur - select <= 1){
+      editOk = true;
+      minDate = moment().subtract(1, 'days')
+    }
+
+    if(moment().day() === 1 && cur - select <= 2 && moment().hour() < 9){
+      editOk = true;
+      minDate = moment().subtract(2, 'days')
+    }
+
+    const childrenTinh = [];
+    tinhArr.map(el => {
+      childrenTinh.push(<Option key={el.code}>{el.name}</Option>);
+    })
 
     if(!this.state.init) return (
       <div style={{textAlign: 'center', paddingTop: 50}}>
@@ -432,513 +453,541 @@ class DOPage extends React.Component {
               />}
               {!this.state.data.quaydau && <b>{moment(this.state.data.date, 'YYYYMMDD').format('DD/MM/YYYY')}</b>}
             </Row>}
-            
-            {this.props.quaydau && <Row>
-              Khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[this.props.DOTruoc.khachhang].value}</b>
-              <br/>
-              Lái Xe: <b style={{color: 'red'}}>{this.state.laixeObj[this.props.DOTruoc.laixe].ten}</b>
-              <br/>
-              Xe: <b style={{color: 'red'}}>{this.props.DOTruoc.xe}</b>
-            </Row>}
-            
-            {/*{this.props.tinhtrang < 0 && intersection(role, [101]).length > 0 && <Row>*/}
-              {/*<b style={{fontSize: 16}}>Đội trưởng:</b>*/}
-              {/*<Select*/}
-                {/*showSearch*/}
-                {/*style={{ width: '100%' }}*/}
-                {/*onChange={(val) => {*/}
-                  {/*this.setState(prev => {*/}
-                    {/*return {*/}
-                      {/*...prev,*/}
-                      {/*data: {*/}
-                        {/*...prev.data,*/}
-                        {/*doitruong: parseInt(val)*/}
-                      {/*}*/}
-                    {/*}*/}
-                  {/*})*/}
-                {/*}}*/}
-                {/*filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}*/}
-              {/*>*/}
-                {/*<Option value={'' + 1012}>Trần Văn Mỹ</Option>*/}
-                {/*<Option value={'' + 1013}>Trần Ngọc Chỉnh</Option>*/}
-              {/*</Select>*/}
-            {/*</Row>*/}
-              {/*}*/}
-              
-            {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row>
-              <b style={{fontSize: 16}}>Thầu phụ: </b>
-              <Select
-                showSearch
-                style={{ width: '100%' }}
-                value={'' + this.state.data.thauphu}
-                onChange={(val) => {
-                this.setState(prev => {
-                  return {
-                    ...prev,
-                    data: {
-                      ...prev.data,
-                      thauphu: parseInt(val)
-                    }
-                  }
-                })
-              }}
-                filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
-              >
-                {this.state.thauphu.filter((el) => {return el.ma !== 101}).map((el, index) => {
-                  return <Option key={el.ma + index} value={'' + el.ma}>{el.ten}</Option>
-                })}
-                
-              </Select>
-              <div>
-                <CreateThauPhu
-                  handleOk={(el) => {
-                    this.initThauPhu(el)
-                  }}
-                />
-              </div>
-            </Row>}
-            
-            { this.props.tinhtrang < 0 && (this.state.data.thauphu === 999) && <Row>
-              <b style={{fontSize: 16}}>Giá chuyến: </b>
-              <InputNumber
-                defaultValue={this.state.data.giachuyen}
-                min={0}
-                formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
-                parser={value => value.replace(/(,*)/g, '')}
-                style={{width: '100%'}}
-                onChange={(value) => {
-                  if(parseInt(value).isNaN){
-                    value = 0;
-                  }
+
+            <Row style={{textAlign: 'center'}}>
+              <Radio.Group
+                size="large"
+                value={this.state.data.loai}
+                onChange={(e) => {
+                  let value = e.target.value
                   this.setState(prev => {
                     return {
                       ...prev,
                       data: {
                         ...prev.data,
-                        giachuyen: value
+                        loai: value,
+                        sotinh: value === 'tinh' ? 1 : 0
                       }
                     }
                   })
                 }}
-              />
+                style={{ marginBottom: 8 }}>
+
+                <Radio.Button
+                  value="noi">Nội Thành</Radio.Button>
+                <Radio.Button
+                  value="ngoai">Ngoại Thành</Radio.Button>
+                <Radio.Button
+                  value="tinh">Đi tỉnh</Radio.Button>
+              </Radio.Group>
             </Row>
-            }
-            
-            {this.props.tinhtrang >=0 && this.state.data.thauphu === 101 && <Row>
-                <Col>
-                  <b style={{fontSize: 16}}>Lái xe:</b>
-                  <SelectLaiXe
-                    disabled={!(intersection(role, [1002]).length > 0)}
-                    option={this.state.laixe}
-                    defaultValue={"" + this.state.data.laixe}
-                    handleChange={this.changeLaiXe.bind(this)}
-                  />
-                </Col>
-                <Col span={24}>
-                  <b style={{fontSize: 16}}>Xe:</b>
 
-                  {/*<AutoComplete*/}
-                    {/*style={{width: '100%'}}*/}
-                    {/*dataSource={this.state.danhsachxe}*/}
-                    {/*value={this.state.data.xe}*/}
-                    {/*onChange={(v) => {*/}
-                      {/*this.setState(prev => {*/}
-                        {/*return {*/}
-                          {/*...prev,*/}
-                          {/*data: {*/}
-                            {/*...prev.data,*/}
-                            {/*xe: v*/}
-                          {/*}*/}
-                        {/*}*/}
-                      {/*})*/}
-                    {/*}}*/}
-                    {/*placeholder="xxX-xxxxx"*/}
-                    {/*filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}*/}
-                  {/*/>*/}
+            {(this.props.tinhtrang < 0 || this.props.edit) && this.state.data.loai && this.state.data.loai === 'tinh' && <Row style={{marginTop: 10, marginBottom: 20}}>
 
-                  <Select
-                    labelInValue value={{ key: this.state.data.xe }}
-                    showSearch
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                    style={{ width: '100%' }} onChange={(e) => {
-                    this.setState(prev => {
-                      return {
-                        ...prev,
-                        data: {
-                          ...prev.data,
-                          xe: e.key
-                        }
-                      }
-                    })
-                  }}>
-                    {this.state.danhsachxe.map((el, index) => {
-                      return <Option key={index} value={el}>{el}</Option>
-                    })}
-                  </Select>
-
-                </Col>
-            </Row>}
-  
-  
-            {(this.props.tinhtrang === 0 || this.props.edit) && this.state.data.thauphu !== 101 &&<Row>
-              <Col>
-                <b style={{fontSize: 16}}>BKS:</b>
-
+              <Col span={24} sm={12}>
+                <b style={{fontSize: 16}}>Số đầu tỉnh</b>
+                <br/>
                 <Input
-                  value={this.state.data.xe}
+                  style={{width: '70%'}}
+                  tyle="number"
+                  value={this.state.data.sotinh}
                   onChange={(e) => {
-                    let value = e.target.value;
+                    let value = e.target.value
                     this.setState(prev => {
                       return {
                         ...prev,
                         data: {
                           ...prev.data,
-                          xe: value
+                          sotinh: value
                         }
                       }
                     })
                   }}
                 />
-
               </Col>
-         
-            </Row>}
-  
-  
-            {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row>
 
               <Col span={24} sm={12}>
-                <b style={{fontSize: 16}}>Khách hàng:</b>
+                <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
+                <br/>
                 <Select
-                  showSearch
-                  style={style}
-                  value={'' + this.state.data.khachhang}
-                  onChange={this.changeKhachHang}
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="Chọn các tỉnh"
                   filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
-                >
-                  {this.state.khachhang.map((el, idx) => {
-                    return <Option key={idx} value={el.code}>{el.value}</Option>
-                  })}
-                </Select>
-                <CreateKhachHang
-                  handleOk={(el) => {
-                    this.initKhachHang()
-                    this.setState(prev => { return {
-                      ...prev,
-                      data: {
-                        ...prev.data,
-                        khachhang: el.code
+                  defaultValue={this.state.data.tinh}
+                  onChange={(value) => {
+                    this.setState(prev => {
+                      return {
+                        ...prev,
+                        data: {
+                          ...prev.data,
+                          tinh: value
+                        }
                       }
-                    }})
+                    })
                   }}
-                />
-              </Col>
-
-              <Col span={24} sm={12}>
-                <b style={{fontSize: 16}}>Người yêu cầu:</b>
-                {/*<CompleteInput*/}
-                {/*option={this.state.nguoiyeucau}*/}
-                {/*onChange={this.changeNguoiYeuCau}*/}
-                {/*/>*/}
-                <Select
-                  showSearch
-                  style={style}
-                  defaultValue={'' + this.state.data.nguoiyeucau}
-                  onChange={this.changeNguoiYeuCau}
-                  filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
                 >
-                  {nguoiyeucau.map((el, idx) => {
-                    return <Option key={idx} value={el.code}>{el.value}</Option>
-                  })}
+                  {childrenTinh}
                 </Select>
+
               </Col>
-
-            </Row>}
-
-  
-            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
-
-              <Col span={24} sm={12}>
-                <b style={{fontSize: 16}}>Điểm đi:</b>
-                <SelectPlace
-                  multi={true}
-                  defaultValue={this.state.data.diemxuatphat}
-                  onChange = {this.changeDiemXuatPhat}
-                />
-              </Col>
-
-              <Col span={24} sm={12}>
-                <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
-                <SelectPlace
-                  multi = {true}
-                  defaultValue={this.state.data.diemtrahang}
-                  onChange = {this.changeDiemTraHang}
-                />
-              </Col>
-            </Row>}
-
-            {/*{(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>*/}
-              {/*<Col span={24} sm={12}>*/}
-                {/*<b style={{fontSize: 16}}>Điểm bắt đầu</b>*/}
-                {/*<br/>*/}
-                {/*<Select*/}
-                  {/*showSearch*/}
-                  {/*style={{ width: '100%' }}*/}
-                  {/*value={'' + this.state.data.diembatdau}*/}
-                  {/*onChange={this.changeDiembatdau}*/}
-                {/*>*/}
-                  {/*{diembatdauOption}*/}
-                {/*</Select>*/}
-              {/*</Col>*/}
-              {/*<Col span={24} sm={12}>*/}
-                {/*<b style={{fontSize: 16}}>Điểm trả hàng xa nhất</b>*/}
-                {/*<br/>*/}
-                {/*<Select*/}
-                  {/*showSearch*/}
-                  {/*style={{ width: '100%' }}*/}
-                  {/*value={'' + this.state.data.diemxanhat}*/}
-                  {/*onChange={this.changeDiemxanhat}*/}
-                {/*>*/}
-                  {/*{diemxanhatOption}*/}
-                {/*</Select>*/}
-              {/*</Col>*/}
-            {/*</Row>}*/}
-
-
-
-            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
               <Col span={24} sm={12}>
                 <b style={{fontSize: 16}}>Tỉnh xuất phát:</b>
                 <br/>
                 <Tinh
-                  defaultValue={this.state.data.tinhxuatphat ? this.state.data.tinhxuatphat.code : "01"}
+                  defaultValue={this.state.data.tinhxuatphat ? this.state.data.tinhxuatphat.code : "00"}
                   handleChange={this.changeTinhXuatPhat}
                 />
               </Col>
+
               <Col span={24} sm={12}>
-                <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
+                <b style={{fontSize: 16}}>Tỉnh xa nhất:</b>
                 <br/>
                 <Tinh
-                  defaultValue={this.state.data.tinhtrahang ? this.state.data.tinhtrahang.code : "01"}
+                  defaultValue={this.state.data.tinhtrahang ? this.state.data.tinhtrahang.code : "00"}
                   handleChange={this.changeTinh}
                 />
               </Col>
             </Row>}
 
-            {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+            {this.state.data.loai && (this.state.data.loai !== 'tinh' || (this.state.data.loai === 'tinh' && this.state.data.tinhxuatphat.code !== '00' && this.state.data.tinhtrahang.code !== '00' && this.state.data.tinh.length > 0 && this.state.data.sotinh > 0)) && <Row>
+              {this.props.quaydau && <Row>
+                Khách hàng: <b style={{color: 'red'}}>{this.state.khachhangObj[this.props.DOTruoc.khachhang].value}</b>
+                <br/>
+                Lái Xe: <b style={{color: 'red'}}>{this.state.laixeObj[this.props.DOTruoc.laixe].ten}</b>
+                <br/>
+                Xe: <b style={{color: 'red'}}>{this.props.DOTruoc.xe}</b>
+              </Row>}
 
-              <Col span={24} sm={8}>
-                <b style={{fontSize: 16}}>Trọng tải (tấn):</b>
-                <InputNumber style={{width: '100%'}} size="large"
-                             value={this.state.data.trongtai}
-                             min={1} max={100}
-                             onChange={(value) => {
-                               if(!isNaN(parseFloat(value)) || value === '') {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       trongtai: value
-                                     }
-                                   }
-                                 })
-                               } else {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       trongtai: 1
-                                     }
-                                   }
-                                 })
-                               }
-                             }}
-                />
-              </Col>
-
-              <Col span={24} sm={8}>
-                <b style={{fontSize: 16}}>Trọng tải thực (kg) :</b>
-                <InputNumber style={{width: '100%'}} size="large"
-                             value={this.state.data.trongtaithuc}
-                             min={0} max={20000}
-                             onChange={(value) => {
-                               if(!isNaN(parseFloat(value)) || value === '') {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       trongtaithuc: value
-                                     }
-                                   }
-                                 })
-                               } else {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       trongtaithuc: 0
-                                     }
-                                   }
-                                 })
-                               }
-                             }}
-                />
-              </Col>
-
-              <Col span={24} sm={8}>
-                <b style={{fontSize: 16}}>CBM (khối):</b>
-                <InputNumber style={{width: '100%'}} size="large"
-                             value={this.state.data.cbm}
-                             min={0} max={5000}
-                             onChange={(value) => {
-                               if(!isNaN(parseFloat(value)) || value === '') {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       cbm: value
-                                     }
-                                   }
-                                 })
-                               } else {
-                                 this.setState(prev => {
-                                   return {
-                                     ...prev,
-                                     data: {
-                                       ...prev.data,
-                                       cbm: 1
-                                     }
-                                   }
-                                 })
-                               }
-                             }}
-                />
-              </Col>
-           
-            </Row>}
-
-            <Row style={{marginTop: 10}}>
-              <b style={{fontSize: 16}}>Ghi chú:</b>
-              <Input type="textarea" rows={4}
-                     defaultValue={this.state.data.ghichu}
-                     onChange={(e) => {
-                       let value = e.target.value
-                       this.setState(prev => {
-                         return {
-                           ...prev,
-                           data: {
-                             ...prev.data,
-                             ghichu: value
-                           }
-                         }
-                       })
-                     }}
-              />
-            </Row>
-            
-            <Row style={{marginTop: 20}}>
-              {this.props.tinhtrang < 0 && <Button type="primary"
-                      style={{fontSize: 16}}
-                      onClick={() => {
-                        if(check(gThis.state.data)) {
-                          // let diemxuatphat = gThis.state.diemxuatphat[indexByCode(gThis.state.data.iddiemxuatphat, gThis.state.diemxuatphat)]
-                          // let diemtrahang = []
-                          // gThis.state.data.iddiemtrahang.map(code => {
-                          //   diemtrahang.push(gThis.state.diemxuatphat[indexByCode(code, gThis.state.diemxuatphat)])
-                          // })
-                          let data = gThis.state.data
-                          // data.diemtrahang = diemtrahang
-                          // data.diemxuatphat = diemxuatphat
-                          //
-                          // console.log(gThis.state.data)
-                          agent.DieuHanh.themDO(data)
-                            .then(res => {
-                              message.success("Thêm mới thành công")
-                              // this.context.router.replace('/dieuhanh');
-                              this.props.success()
-                              
-                            })
-                            .catch(err => {
-                              message.error("Thêm mới that bai")
-                            })
-                        }
-                      }}
-              >
-                Tạo mới
-              </Button>}
-  
-              {this.props.tinhtrang === 0 && <Button type="primary"
-                                                   style={{fontSize: 16}}
-                                                   onClick={() => {
-                                                     if(checkLaiXe(gThis.state.data)) {
-                                                       agent.DieuHanh.chonlaixe(gThis.state.data)
-                                                         .then(res => {
-                                                           message.success("Thêm mới thành công")
-                                                           // this.context.router.replace('/dieuhanh');
-                                                           this.props.success()
-      
-                                                         })
-                                                         .catch(err => {
-                                                           message.error("Thêm mới that bai")
-                                                         })
-                                                     }
-                                                   }}
-              >
-                Chọn lái xe & xe
-              </Button>}
-              {editOk && this.props.edit && <Button type="primary"
-                                          style={{fontSize: 16}}
-                                          onClick={() => {
-                                            if(check(gThis.state.data)) {
-                                              agent.DieuHanh.capNhapDO(gThis.state.data)
-                                                .then(res => {
-                                                  message.success("Cập nhập thành công")
-                                                  // this.context.router.replace('/dieuhanh');
-                                                  this.props.success()
-
-                                                })
-                                                .catch(err => {
-                                                  message.error("Cập nhập that bai")
-                                                })
-                                            }
-                                          }}
-              >
-                Cập nhập
-              </Button>
-              }
-
-
-              {!editOk && this.props.edit &&
-              <div>
-                {!this.props.duyetchinhsua && <Button type="primary"
-                                                      style={{fontSize: 16}}
-                                                      onClick={() => {
-                                                        if(check(gThis.state.data)) {
-                                                          agent.DieuHanh.capnhapDO2({cu: gThis.state.datacu, moi: gThis.state.data})
-                                                            .then(res => {
-                                                              message.success("Cập nhập thành công")
-                                                              // this.context.router.replace('/dieuhanh');
-                                                              this.props.success()
-                                                            })
-                                                            .catch(err => {
-                                                              message.error("Cập nhập that bai")
-                                                            })
-                                                        }
-                                                      }}
+              {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row>
+                <b style={{fontSize: 16}}>Thầu phụ: </b>
+                <Select
+                  showSearch
+                  style={{ width: '100%' }}
+                  value={'' + this.state.data.thauphu}
+                  onChange={(val) => {
+                  this.setState(prev => {
+                    return {
+                      ...prev,
+                      data: {
+                        ...prev.data,
+                        thauphu: parseInt(val)
+                      }
+                    }
+                  })
+                }}
+                  filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
                 >
-                  Cập nhập (quá hạn)
-                </Button>}
-                {/*<br/>*/}
-              </div>
+                  {this.state.thauphu.filter((el) => {return el.ma !== 101}).map((el, index) => {
+                    return <Option key={el.ma + index} value={'' + el.ma}>{el.ten}</Option>
+                  })}
+
+                </Select>
+                <div>
+                  <CreateThauPhu
+                    handleOk={(el) => {
+                      this.initThauPhu(el)
+                    }}
+                  />
+                </div>
+              </Row>}
+
+              { this.props.tinhtrang < 0 && (this.state.data.thauphu === 999) && <Row>
+                <b style={{fontSize: 16}}>Giá chuyến: </b>
+                <InputNumber
+                  defaultValue={this.state.data.giachuyen}
+                  min={0}
+                  formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
+                  parser={value => value.replace(/(,*)/g, '')}
+                  style={{width: '100%'}}
+                  onChange={(value) => {
+                    if(parseInt(value).isNaN){
+                      value = 0;
+                    }
+                    this.setState(prev => {
+                      return {
+                        ...prev,
+                        data: {
+                          ...prev.data,
+                          giachuyen: value
+                        }
+                      }
+                    })
+                  }}
+                />
+              </Row>
               }
 
-            </Row>
+              {this.props.tinhtrang >=0 && this.state.data.thauphu === 101 && <Row>
+                  <Col>
+                    <b style={{fontSize: 16}}>Lái xe:</b>
+                    <SelectLaiXe
+                      disabled={!(intersection(role, [1002]).length > 0)}
+                      option={this.state.laixe}
+                      defaultValue={"" + this.state.data.laixe}
+                      handleChange={this.changeLaiXe.bind(this)}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <b style={{fontSize: 16}}>Xe:</b>
+
+                    {/*<AutoComplete*/}
+                      {/*style={{width: '100%'}}*/}
+                      {/*dataSource={this.state.danhsachxe}*/}
+                      {/*value={this.state.data.xe}*/}
+                      {/*onChange={(v) => {*/}
+                        {/*this.setState(prev => {*/}
+                          {/*return {*/}
+                            {/*...prev,*/}
+                            {/*data: {*/}
+                              {/*...prev.data,*/}
+                              {/*xe: v*/}
+                            {/*}*/}
+                          {/*}*/}
+                        {/*})*/}
+                      {/*}}*/}
+                      {/*placeholder="xxX-xxxxx"*/}
+                      {/*filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}*/}
+                    {/*/>*/}
+
+                    <Select
+                      labelInValue value={{ key: this.state.data.xe }}
+                      showSearch
+                      filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                      style={{ width: '100%' }} onChange={(e) => {
+                      this.setState(prev => {
+                        return {
+                          ...prev,
+                          data: {
+                            ...prev.data,
+                            xe: e.key
+                          }
+                        }
+                      })
+                    }}>
+                      {this.state.danhsachxe.map((el, index) => {
+                        return <Option key={index} value={el}>{el}</Option>
+                      })}
+                    </Select>
+
+                  </Col>
+              </Row>}
+
+
+              {(this.props.tinhtrang === 0 || this.props.edit) && this.state.data.thauphu !== 101 &&<Row>
+                <Col>
+                  <b style={{fontSize: 16}}>BKS:</b>
+
+                  <Input
+                    value={this.state.data.xe}
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      this.setState(prev => {
+                        return {
+                          ...prev,
+                          data: {
+                            ...prev.data,
+                            xe: value
+                          }
+                        }
+                      })
+                    }}
+                  />
+
+                </Col>
+
+              </Row>}
+
+
+              {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row>
+
+                <Col span={24} sm={12}>
+                  <b style={{fontSize: 16}}>Khách hàng:</b>
+                  <Select
+                    showSearch
+                    style={style}
+                    value={'' + this.state.data.khachhang}
+                    onChange={this.changeKhachHang}
+                    filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
+                  >
+                    {this.state.khachhang.map((el, idx) => {
+                      return <Option key={idx} value={el.code}>{el.value}</Option>
+                    })}
+                  </Select>
+                  <CreateKhachHang
+                    handleOk={(el) => {
+                      this.initKhachHang()
+                      this.setState(prev => { return {
+                        ...prev,
+                        data: {
+                          ...prev.data,
+                          khachhang: el.code
+                        }
+                      }})
+                    }}
+                  />
+                </Col>
+
+                <Col span={24} sm={12}>
+                  <b style={{fontSize: 16}}>Người yêu cầu:</b>
+                  {/*<CompleteInput*/}
+                  {/*option={this.state.nguoiyeucau}*/}
+                  {/*onChange={this.changeNguoiYeuCau}*/}
+                  {/*/>*/}
+                  <Select
+                    showSearch
+                    style={style}
+                    defaultValue={'' + this.state.data.nguoiyeucau}
+                    onChange={this.changeNguoiYeuCau}
+                    filterOption={(input, option) => slugify(option.props.children.toLowerCase()).indexOf(slugify(input.toLowerCase())) >= 0}
+                  >
+                    {nguoiyeucau.map((el, idx) => {
+                      return <Option key={idx} value={el.code}>{el.value}</Option>
+                    })}
+                  </Select>
+                </Col>
+
+              </Row>}
+
+
+              {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+
+                <Col span={24} sm={12}>
+                  <b style={{fontSize: 16}}>Điểm đi:</b>
+                  <SelectPlace
+                    multi={true}
+                    defaultValue={this.state.data.diemxuatphat}
+                    onChange = {this.changeDiemXuatPhat}
+                  />
+                </Col>
+
+                <Col span={24} sm={12}>
+                  <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
+                  <SelectPlace
+                    multi = {true}
+                    defaultValue={this.state.data.diemtrahang}
+                    onChange = {this.changeDiemTraHang}
+                  />
+                </Col>
+              </Row>}
+
+
+              {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+
+                <Col span={24} sm={8}>
+                  <b style={{fontSize: 16}}>Trọng tải (tấn):</b>
+                  <InputNumber style={{width: '100%'}} size="large"
+                               value={this.state.data.trongtai}
+                               min={1} max={100}
+                               onChange={(value) => {
+                                 if(!isNaN(parseFloat(value)) || value === '') {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         trongtai: value
+                                       }
+                                     }
+                                   })
+                                 } else {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         trongtai: 1
+                                       }
+                                     }
+                                   })
+                                 }
+                               }}
+                  />
+                </Col>
+
+                <Col span={24} sm={8}>
+                  <b style={{fontSize: 16}}>Trọng tải thực (kg) :</b>
+                  <InputNumber style={{width: '100%'}} size="large"
+                               value={this.state.data.trongtaithuc}
+                               min={0} max={20000}
+                               onChange={(value) => {
+                                 if(!isNaN(parseFloat(value)) || value === '') {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         trongtaithuc: value
+                                       }
+                                     }
+                                   })
+                                 } else {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         trongtaithuc: 0
+                                       }
+                                     }
+                                   })
+                                 }
+                               }}
+                  />
+                </Col>
+
+                <Col span={24} sm={8}>
+                  <b style={{fontSize: 16}}>CBM (khối):</b>
+                  <InputNumber style={{width: '100%'}} size="large"
+                               value={this.state.data.cbm}
+                               min={0} max={5000}
+                               onChange={(value) => {
+                                 if(!isNaN(parseFloat(value)) || value === '') {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         cbm: value
+                                       }
+                                     }
+                                   })
+                                 } else {
+                                   this.setState(prev => {
+                                     return {
+                                       ...prev,
+                                       data: {
+                                         ...prev.data,
+                                         cbm: 1
+                                       }
+                                     }
+                                   })
+                                 }
+                               }}
+                  />
+                </Col>
+
+              </Row>}
+
+              <Row style={{marginTop: 10}}>
+                <b style={{fontSize: 16}}>Ghi chú:</b>
+                <TextArea type="textarea" rows={4}
+                       defaultValue={this.state.data.ghichu}
+                       onChange={(e) => {
+                         let value = e.target.value
+                         // console.log(value)
+                         this.setState(prev => {
+                           return {
+                             ...prev,
+                             data: {
+                               ...prev.data,
+                               ghichu: value
+                             }
+                           }
+                         })
+                       }}
+                />
+              </Row>
+
+              <Row style={{marginTop: 20}}>
+                {this.props.tinhtrang < 0 && <Button type="primary"
+                        style={{fontSize: 16}}
+                        onClick={() => {
+                          if(check(gThis.state.data)) {
+                            // let diemxuatphat = gThis.state.diemxuatphat[indexByCode(gThis.state.data.iddiemxuatphat, gThis.state.diemxuatphat)]
+                            // let diemtrahang = []
+                            // gThis.state.data.iddiemtrahang.map(code => {
+                            //   diemtrahang.push(gThis.state.diemxuatphat[indexByCode(code, gThis.state.diemxuatphat)])
+                            // })
+                            let data = gThis.state.data
+                            // data.diemtrahang = diemtrahang
+                            // data.diemxuatphat = diemxuatphat
+                            //
+                            // console.log(gThis.state.data)
+                            agent.DieuHanh.themDO(data)
+                              .then(res => {
+                                message.success("Thêm mới thành công")
+                                // this.context.router.replace('/dieuhanh');
+                                this.props.success()
+
+                              })
+                              .catch(err => {
+                                message.error("Thêm mới that bai")
+                              })
+                          }
+                        }}
+                >
+                  Tạo mới
+                </Button>}
+
+                {this.props.tinhtrang === 0 && <Button type="primary"
+                                                     style={{fontSize: 16}}
+                                                     onClick={() => {
+                                                       if(checkLaiXe(gThis.state.data)) {
+                                                         agent.DieuHanh.chonlaixe(gThis.state.data)
+                                                           .then(res => {
+                                                             message.success("Thêm mới thành công")
+                                                             // this.context.router.replace('/dieuhanh');
+                                                             this.props.success()
+
+                                                           })
+                                                           .catch(err => {
+                                                             message.error("Thêm mới that bai")
+                                                           })
+                                                       }
+                                                     }}
+                >
+                  Chọn lái xe & xe
+                </Button>}
+                {editOk && this.props.edit && <Button type="primary"
+                                            style={{fontSize: 16}}
+                                            onClick={() => {
+                                              if(check(gThis.state.data)) {
+                                                agent.DieuHanh.capNhapDO(gThis.state.data)
+                                                  .then(res => {
+                                                    message.success("Cập nhập thành công")
+                                                    // this.context.router.replace('/dieuhanh');
+                                                    this.props.success()
+
+                                                  })
+                                                  .catch(err => {
+                                                    message.error("Cập nhập that bai")
+                                                  })
+                                              }
+                                            }}
+                >
+                  Cập nhập
+                </Button>
+                }
+
+
+                {!editOk && this.props.edit &&
+                <div>
+                  {!this.props.duyetchinhsua && <Button type="primary"
+                                                        style={{fontSize: 16}}
+                                                        onClick={() => {
+                                                          if(check(gThis.state.data)) {
+                                                            agent.DieuHanh.capnhapDO2({cu: gThis.state.datacu, moi: gThis.state.data})
+                                                              .then(res => {
+                                                                message.success("Cập nhập thành công")
+                                                                // this.context.router.replace('/dieuhanh');
+                                                                this.props.success()
+                                                              })
+                                                              .catch(err => {
+                                                                message.error("Cập nhập that bai")
+                                                              })
+                                                          }
+                                                        }}
+                  >
+                    Cập nhập (quá hạn)
+                  </Button>}
+                  {/*<br/>*/}
+                </div>
+                }
+
+              </Row>
+            </Row>}
           </div> }
         </div>
       </div>

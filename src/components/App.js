@@ -101,13 +101,15 @@ class App extends React.Component {
                   width="170"
                 >
                   <div className="logo" />
+
                   <div className="admin-topSlide">
                     <span>COLOMBUS</span>
                   </div>
+
                   <Menu theme="dark"
                         mode={this.state.mode}
                         selectedKeys={[this.props.name]}
-                        defaultOpenKeys={['duyetchiphi', 'lenhdieuxe', 'thongke', 'thuquy', 'duyetchinhsua']}
+                        defaultOpenKeys={['duyetchiphi', 'lenhdieuxe', 'thongke', 'thuquy', 'duyetchinhsua', 'diachi', 'doanhthu']}
                   >
                     <Menu.Item key="Dashboard">
                       <Link to="/">
@@ -205,6 +207,24 @@ class App extends React.Component {
                       {/*</Menu.Item>*/}
 
                     </SubMenu>
+
+                    <SubMenu
+                      key="diachi"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Địa chỉ</span></span>}
+                    >
+                      <Menu.Item key="diachi1">
+                        <Link to="/suadiachi" >Sửa địa chỉ</Link>
+                      </Menu.Item>
+                    </SubMenu>
+
+                    {(intersection(role, [303]).length > 0) && <SubMenu
+                      key="doanhthu"
+                      title={<span><Icon type="idcard" /><span className="nav-text">Doanh thu</span></span>}
+                    >
+                      <Menu.Item key="doanhthu1">
+                        <Link to="/doanhthu" >Doanh thu</Link>
+                      </Menu.Item>
+                    </SubMenu>}
 
 
                   </Menu>

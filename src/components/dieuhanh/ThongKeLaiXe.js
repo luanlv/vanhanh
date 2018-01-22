@@ -161,26 +161,18 @@ class Home extends React.Component {
     if(this.state.filteredInfo && this.state.filteredInfo.tenkhachhang && this.state.filteredInfo.tenkhachhang.length > 0){
       DOs = DOs.filter(el => {return this.state.filteredInfo.tenkhachhang.indexOf(el.khachhang + '') >= 0})
     }
+
+    let DT = intersection(role, [301, 303]).length > 0
+    let sum = 0
+    if(DT){
+      DOs.map(el => {
+        sum += (el.doanhthu || []).length > 0 ? el.doanhthu[0] : 0
+      })
+    }
+
     return (
       <div>
         <h5 style={{textAlign: 'center'}}>Báo cáo theo lái xe</h5>
-        {/*<DatePicker*/}
-          {/*disabledDate={this.disabledStartDate}*/}
-          {/*format="DD/MM/YYYY"*/}
-          {/*value={startValue}*/}
-          {/*placeholder="Bắt đầu"*/}
-          {/*onChange={this.onStartChange}*/}
-          {/*onOpenChange={this.handleStartOpenChange}*/}
-        {/*/>*/}
-        {/*<DatePicker*/}
-          {/*disabledDate={this.disabledEndDate}*/}
-          {/*format="DD/MM/YYYY"*/}
-          {/*value={endValue}*/}
-          {/*placeholder="Kết thúc"*/}
-          {/*onChange={this.onEndChange}*/}
-          {/*open={endOpen}*/}
-          {/*onOpenChange={this.handleEndOpenChange}*/}
-        {/*/>*/}
         <RangePicker
           defaultValue={[moment(startValue, 'YYYYMMDD'), moment(endValue, 'YYYYMMDD')]}
           format={'DD/MM/YYYY'}
@@ -197,14 +189,21 @@ class Home extends React.Component {
               return (<Option key={idx} value={el.ma}>{el.ten} { length > 0 && <span style={{color: 'red', fontWeight: 'bold'}}>({length})</span> }</Option>)
             })
           }
-
-
         </Select>
-
+        <br/>
         <div style={{float: 'right'}}>
-          <a href={`${agent.API_ROOT}/dieuhanh/do/exceltheolaixe?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&laixe=${this.state.laixe}`} target="_blank"><Button>Xuất Excel</Button></a>
+          <a href={`${agent.API_ROOT}/dieuhanh/do/exceltheolaixe?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&laixe=${this.state.laixe}&doanhthu=${intersection(role, [301, 303]).length}`} target="_blank">
+            <Button>Xuất Excel chi tiết</Button></a>
         </div>
 
+        <div style={{float: 'right'}}>
+          <a href={`${agent.API_ROOT}/dieuhanh/do/exceltheolaixerutgon?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&laixe=${this.state.laixe}&doanhthu=${intersection(role, [301, 303]).length}`} target="_blank">
+            <Button>Xuất Excel rút gọn</Button></a>
+        </div>
+        <br/>
+        {DT && <div style={{fontSize: 16}}>
+          Tổng doanh thu: <span style={{color: 'red'}}>{sum.toLocaleString()} đ</span>
+        </div>}
         <hr/>
 
         <Row>
@@ -243,6 +242,21 @@ class Home extends React.Component {
                   </span>
                 )}
               />
+
+              {(intersection(role, [301, 303]).length > 0) &&
+              <Column
+                title="Doanh thu"
+                dataIndex="doanhthu"
+                key="doanhthu"
+                render={(text, record) => (
+                  <span
+                    style={{color: "red", fontWeight: 'bold'}}
+                  >
+                      {(record.doanhthu || []).length > 0 && record.doanhthu[0].toLocaleString()}
+                    </span>
+                )}
+              />
+              }
 
               <Column
                 title="Biển số xe"
@@ -294,11 +308,26 @@ class Home extends React.Component {
               <Column
                 title="Tỉnh đến"
                 key="diemden"
-                render={(text, record) => (
-                  <span>
+                render={(text, record) => {
+
+                  if(record.tinhtrahang.slug === 'chua-phan'){
+                    if(record.loai === 'noi') {
+                      return (<span>
+                        Nội Thành
+                      </span>)
+                    } else {
+                      return (<span>
+                        Ngoại Thành
+                      </span>)
+                    }
+                  }
+
+                  return (
+                    <span>
                     {record.tinhtrahang ? record.tinhtrahang.name : "Hà nội"}
                   </span>
-                )}
+                  )
+                }}
               />
 
 

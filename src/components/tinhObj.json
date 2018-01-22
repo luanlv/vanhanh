@@ -440,18 +440,18 @@
 "name_with_type": "Thành phố Cần Thơ",
 "code": "92"
 },
-  "201":{
-    "name": "Ba Vì",
-    "slug": "ba-vi",
-    "type": "tinh",
-    "name_with_type": "Ba Vì",
-    "code": "201"
-  },
-  "00": {
-    "name": "...",
-    "slug": "chua-phan",
-    "type": "tinh",
-    "name_with_type": "...",
-    "code": "00"
-  }
+"201":{
+  "name": "Ba Vì",
+  "slug": "ba-vi",
+  "type": "tinh",
+  "name_with_type": "Ba Vì",
+  "code": "201"
+},
+"00": {
+  "name": "...",
+  "slug": "chua-phan",
+  "type": "tinh",
+  "name_with_type": "...",
+  "code": "00"
+}
 }

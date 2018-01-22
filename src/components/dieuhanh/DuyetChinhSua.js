@@ -142,6 +142,7 @@ class DuyetChinhSua extends React.Component {
                 style={{textAlign: 'right', marginLeft: 40, marginRight: 40}}
               >
                 <span style={{marginRight: 20}}>Người yêu cầu: {this.state.dieuxeObj[el.nguoiyeucau].ten}</span>
+                <span style={{marginRight: 20}}>Mã lênh: {el._id}</span>
                 <Button type="danger"
                         onClick={() => {
                           let that = this;

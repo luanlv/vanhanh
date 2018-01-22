@@ -11,7 +11,8 @@ class CreatePlace extends React.Component {
     this.state = {
       ma: Math.random().toString(36).substring(5),
       visible: false,
-      tinh: "01"
+      tinh: "01",
+      ten: ''
     }
     bindAll(this, 'changeTinh', 'changeMaDiem', 'changeTenDiem')
   }
@@ -19,6 +20,8 @@ class CreatePlace extends React.Component {
   
   showModal = () => {
     this.setState({
+      ma: Math.random().toString(36).substring(5),
+      ten: '',
       visible: true,
     });
   }
@@ -76,21 +79,17 @@ class CreatePlace extends React.Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          {/*Mã điểm:*/}
-          {/*<Input*/}
-            {/*value={this.state.ma}*/}
-            {/*onChange={this.changeMaDiem}*/}
-          {/*/>*/}
-          {/*<br/>*/}
+          Mã:
+          <Input
+            value={this.state.ma}
+            onChange={this.changeMaDiem}
+          />
+          <br/>
           Tên điểm:
           <Input
+            value={this.state.ten}
             onChange={this.changeTenDiem}
           />
-          {/*<br/>*/}
-          {/*Tỉnh:*/}
-          {/*<Tinh*/}
-            {/*handleChange={this.changeTinh}*/}
-          {/*/>*/}
         </Modal>
       </div>
     );

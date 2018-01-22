@@ -222,7 +222,7 @@ class Home extends React.Component {
 
               <Table dataSource={chuaduyet}
                      size="small"
-                   scroll={{ x: 1800}}
+                   scroll={{ x: 2500}}
                    indentSize={15}
                    bordered
                    pagination={{pageSize: 100}}
@@ -237,6 +237,17 @@ class Home extends React.Component {
                    }}
                    onChange={this.handleChange}
             >
+                <Column
+                  width={30}
+                  title="Chi phí kê"
+                  render={(text, chiphi) => {
+                    return (<span>
+                      {chiphi.sodautinh > 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b></div>}
+                      {chiphi.sodautinh === 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyen)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b>
+                      </div>}
+                  </span>)
+                  }}
+                />
                 <Column
                   width={20}
                   title="Mã lệnh"
@@ -592,7 +603,7 @@ class Home extends React.Component {
 
               <Table dataSource={daduyet}
                      size="small"
-                     scroll={{ x: 1800}}
+                     scroll={{ x: 2500}}
                      indentSize={15}
                      bordered
                      pagination={{pageSize: 100}}
@@ -601,12 +612,33 @@ class Home extends React.Component {
                        that.setState({
                          chiphi: record
                        }, () => {
-                         console.log(that.state.chiphi)
                          that.chinhsua()
                        })
                      }}
                      onChange={this.handleChange}
               >
+                <Column
+                  width={30}
+                  title="Chi phí kê"
+                  render={(text, chiphi) => {
+                    return (<span>
+                      {chiphi.sodautinh > 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b></div>}
+                      {chiphi.sodautinh === 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyen)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b>
+                      </div>}
+                  </span>)
+                  }}
+                />
+                <Column
+                  width={30}
+                  title="Chi phí duyệt"
+                  render={(text, chiphi) => {
+                    let chiphidieuhanh = chiphi.sodautinh > 0 ? (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+                      : (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyendh)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+                    return (<span>
+                      <div style={{textAlign: 'center'}}><b style={{color: 'red'}}>{chiphidieuhanh.toLocaleString()}</b></div>
+                  </span>)
+                  }}
+                />
                 <Column
                   width={20}
                   title="Mã lệnh"
@@ -700,7 +732,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                        {record.km}
+                        {record.kmdh}
                   </span>
                     )}
                   />
@@ -724,7 +756,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                        {record.giadau.toLocaleString()}
+                        {record.giadaudh.toLocaleString()}
                   </span>
                     )}
                   />
@@ -737,7 +769,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                        {Math.floor(record.km*record.dinhmuc*record.giadau/100).toLocaleString()}
+                        {Math.floor(record.kmdh*record.dinhmuc*record.giadaudh/100).toLocaleString()}
                   </span>
                     )}
                   />
@@ -755,7 +787,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                      {record.sodautinh === 0 && <span>
+                      {record.sodautinhdh === 0 && <span>
                         {tienmoichuyen(record.mapDO[0].trongtai, record.sochuyen).toLocaleString()}
                       </span>}
                       </span>
@@ -774,7 +806,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                        {record.sodautinh}
+                        {record.sodautinhdh}
                   </span>
                     )}
                   />
@@ -787,7 +819,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                        {tiendautinh(record.mapDO[0].trongtai, record.sodautinh).toLocaleString()}
+                        {tiendautinh(record.mapDO[0].trongtai, record.sodautinhdh).toLocaleString()}
                   </span>
                     )}
                   />
@@ -814,7 +846,7 @@ class Home extends React.Component {
                     // key="ghichu"
                     render={(text, record) => (
                       <span>
-                      {tiendiem(record.mapDO[0].trongtai, record.sodiem).toLocaleString()}
+                      {tiendiem(record.mapDO[0].trongtai, record.sodiemdh).toLocaleString()}
                   </span>
                     )}
                   />
@@ -828,7 +860,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.cauduong.toLocaleString()}
+                      {record.cauduongdh.toLocaleString()}
                   </span>
                   )}
                 />
@@ -840,7 +872,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.bocxep.toLocaleString()}
+                      {record.bocxepdh.toLocaleString()}
                   </span>
                   )}
                 />
@@ -852,7 +884,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.luudem.toLocaleString()}
+                      {record.luudemdh.toLocaleString()}
                   </span>
                   )}
                 />
@@ -864,7 +896,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.luat.toLocaleString()}
+                      {record.luatdh.toLocaleString()}
                   </span>
                   )}
                 />
@@ -875,7 +907,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.phikhac.toLocaleString()}
+                      {record.phikhacdh.toLocaleString()}
                   </span>
                   )}
                 />
@@ -1047,11 +1079,17 @@ class Home extends React.Component {
                                            onClick={() => {
                                              let that = this;
                                              chiphi.ghichudieuhanh = this.state.ghichudieuhanh
+                                             chiphi.dieuhanh = true;
                                              agent.DieuHanh.duyetChiPhi(chiphi)
                                                .then(res => {
                                                  message.success('Duyệt thành công')
-                                                 modal.destroy()
-                                                 that.init()
+                                                 this.setState({
+                                                   chiphi: chiphi
+                                                 }, () => {
+                                                   modal.destroy()
+                                                   that.init()
+                                                   // this.chinhsua()
+                                                 })
                                                })
                                            }}
               >Duyệt</Button>}
@@ -1103,47 +1141,63 @@ class Home extends React.Component {
   chinhsua = () => {
     let that = this;
     let chiphi = this.state.chiphi
+    let chiphilaixe = chiphi.sodautinh > 0 ? (Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac)
+      : (Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyen)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac)
+
+    let chiphidieuhanh = chiphi.sodautinh > 0 ? (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+      : (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyendh)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+    // console.log(chiphidieuhanh)
     let modal = Modal.info({
-      width: 800,
+      width: 1200,
       title: `Chi phí chuyến ${this.state.chiphi.mapDO[0]._id}`,
       content: (
         <div>
           <div>
             <div>
-              <Button type="primary"
-                      style={{float: 'right'}}
-                      onClick={() => {
-                        let that = this;
-                        // this.state.chiphi.dinhmuc = this.state.danhsachxeObj[this.state.chiphi.mapDO[0].bks].dm;
-                        agent.DieuHanh.duyetChiPhi(this.state.chiphi)
-                          .then(res => {
-                            message.success('Cập nhập thành công')
-                            // this.init()
-                            // modal.destroy()
-                            that.init()
+              {/*<Popconfirm title={"Duyệt chi phí chuyến: " + chiphidieuhanh + " đ"} okText="Xác nhận" cancelText="Hủy">*/}
+              {!this.state.chiphi.dieuhanh && <Button type="primary"
+                        style={{float: 'right'}}
+                        onClick={() => {
+                          let that = this;
+                          let chiphi = this.state.chiphi
+                          chiphi.ghichudieuhanh = this.state.ghichudieuhanh
+                          chiphi.dieuhanh = true;
+                          this.setState({chiphi: chiphi}, () => {
+                            agent.DieuHanh.duyetChiPhi(this.state.chiphi)
+                              .then(res => {
+                                message.success('Duyệt thành công')
+                                // this.init()
+                                modal.destroy()
+                                that.init()
+                                // that.chinhsua()
+                              })
                           })
-                      }}
-              >Duyệt</Button>
+                          // this.state.chiphi.dinhmuc = this.state.danhsachxeObj[this.state.chiphi.mapDO[0].bks].dm;
+
+                        }}
+                >Duyệt</Button>}
+              {this.state.chiphi.dieuhanh &&
+                <span style={{float: "right", color: "green"}}>
+                  Đã duyệt
+                </span>
+              }
+              {/*</Popconfirm>*/}
             </div>
             Lái xe: <b style={{color: 'red'}}>{this.state.danhsachlaixeObj[this.state.chiphi.laixe].ten}</b>
             <br/>
-            <table>
+            Biển kiểm soát: <b style={{color: 'red'}}>{this.state.chiphi.mapDO[0].xe}</b>
+            <br/>
+            <table style={{width: "100%",  border: '1px solid #ddd', borderCollapse: 'collapse'}}>
               <tr>
-                <th></th>
-                <th>Lái xe</th>
-                <th>Điều hành</th>
+                <th style={{width: '20%', border: '1px solid #ddd'}}></th>
+                <th style={{width: '40%', border: '1px solid #ddd'}}>Lái xe</th>
+                <th style={{width: '40%', border: '1px solid #ddd'}}>Điều hành</th>
               </tr>
 
               <tr>
-                <td>Biển kiểm soát</td>
-                <td style={{textAlign: 'center'}}><b style={{color: 'red'}}>{this.state.chiphi.mapDO[0].xe}</b></td>
-                <td style={{textAlign: 'center'}}><b style={{color: 'red'}}>{this.state.chiphi.mapDO[0].xe}</b></td>
-              </tr>
-
-              <tr>
-                <td>Km chạy</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.km}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Km chạy</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.km.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1171,9 +1225,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Giá dầu</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.giadau}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Giá dầu</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.giadau.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1201,9 +1255,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Số đầu tỉnh</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.sodautinh}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Số đầu tỉnh</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodautinh}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1231,9 +1285,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Số điểm</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.sodiem}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Số điểm</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodiem}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1261,9 +1315,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Tiền cầu đường</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.cauduong}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Tiền cầu đường</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.cauduong.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1291,9 +1345,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Tiền bốc xếp</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.bocxep}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Tiền bốc xếp</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.bocxep.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1321,9 +1375,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Tiền lưu đêm</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.luudem}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Tiền lưu đêm</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luudem.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1351,9 +1405,9 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Tiền luật</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.luudem}</b></td>
-                <td>
+                <td style={{border: '1px solid #ddd'}}>Tiền luật</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.luat.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
@@ -1381,14 +1435,14 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Chi phí khác</td>
-                <td><b style={{color: 'red'}}>{this.state.chiphi.phikhac}</b></td>
-                <td>
+                <td style={{ border: '1px solid #ddd'}}>Chi phí khác</td>
+                <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.phikhac.toLocaleString()}</b></td>
+                <td style={{border: '1px solid #ddd'}}>
                   <InputNumber
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
                     parser={value => value.replace(/(,*)/g, '')}
-                    style={{width: '30%'}}
+                    style={{width: '100%'}}
                     placeholder="Chi phí khác"
                     defaultValue={this.state.chiphi.phikhacdh || 0}
                     onChange={(value) => {
@@ -1411,37 +1465,68 @@ class Home extends React.Component {
               </tr>
 
               <tr>
-                <td>Tổng chi phí</td>
-                <td>
-                  {chiphi.sodautinh > 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b> đ</div>}
-                  {chiphi.sodautinh === 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.km*chiphi.dinhmuc*chiphi.giadau/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyen)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiem) + chiphi.cauduong + chiphi.bocxep + chiphi.luudem + chiphi.luat + chiphi.phikhac).toLocaleString()}</b> đ</div>}
+                <td style={{border: '1px solid #ddd'}}>Ghi chú:</td>
+                <td style={{border: '1px solid #ddd', padding: 5}}><pre>{this.state.chiphi.ghichu}</pre></td>
+                <td style={{border: '1px solid #ddd'}}>
+                  <textarea
+                    placeholder=""
+                    row="2"
+                    rows="4"
+                    style={{width: '100%', padding: 5}}
+                    defaultValue={chiphi.ghichudieuhanh || this.state.ghichudieuhanh}
+                    onChange={(e) => {
+                      let value = e.target.value
+                      this.setState({
+                        ghichudieuhanh: value
+                      })
+                    }}
+                  />
                 </td>
-                <td>
-                  {chiphi.sodautinh > 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh).toLocaleString()}</b> đ</div>}
-                  {chiphi.sodautinh === 0 && <div><b style={{color: 'red'}}>{(Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyendh)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh).toLocaleString()}</b> đ</div>}
+              </tr>
+
+              <tr>
+                <td style={{border: '1px solid #ddd'}}>Tổng chi phí</td>
+                <td style={{border: '1px solid #ddd'}}>
+                  <div style={{textAlign: 'center'}}><b style={{color: 'red'}}>{chiphilaixe.toLocaleString()}</b> đ</div>
+                </td>
+                <td style={{border: '1px solid #ddd'}}>
+                  <div style={{textAlign: 'center'}}><b style={{color: 'red'}}>{chiphidieuhanh.toLocaleString()}</b> đ</div>
+
                 </td>
               </tr>
 
             </table>
 
             <br/>
+            {chiphi.ghichuketoan && <div>
+              Ghi chú kế toán:
+              <b style={{color: 'red', marginLeft: 3}}>{chiphi.ghichuketoan}</b>
+            </div>}
             <br/>
             <br/>
             <div>
-
+              <Button type="default"
+                      onClick={() => this.xemLenh(this.state.chiphi.do)}
+              >Chi tiết chuyến chạy</Button>
 
               <Button type="primary"
                                            style={{float: 'right'}}
                                            onClick={() => {
                                              let that = this;
                                              // this.state.chiphi.dinhmuc = this.state.danhsachxeObj[this.state.chiphi.mapDO[0].bks].dm;
-                                             agent.DieuHanh.capNhapChiPhi(this.state.chiphi)
-                                               .then(res => {
-                                                 message.success('Cập nhập thành công')
-                                                 // this.init()
-                                                 // modal.destroy()
-                                                 that.init()
-                                               })
+                                             let chiphi = this.state.chiphi
+                                             chiphi.ghichudieuhanh = this.state.ghichudieuhanh
+                                             this.setState({chiphi: chiphi}, () => {
+                                               agent.DieuHanh.capNhapChiPhi(this.state.chiphi)
+                                                 .then(res => {
+                                                   message.success('Cập nhập thành công')
+                                                   // this.init()
+                                                   modal.destroy()
+                                                   that.init()
+                                                   that.chinhsua()
+                                                 })
+                                             })
+
                                            }}
               >Cập nhập</Button>
 

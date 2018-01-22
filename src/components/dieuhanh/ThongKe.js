@@ -37,6 +37,9 @@ class Home extends React.Component {
     super(props)
     
     this.state = {
+      display: {
+        1: true
+      },
       startValue: moment(Date.now()).format('YYYYMMDD'),
       endValue: moment(Date.now()).format('YYYYMMDD'),
       khachhang: 'tatca',
@@ -121,6 +124,7 @@ class Home extends React.Component {
   
   render() {
     const role = this.props.user.role;
+    // alert(role)
     let that = this
     if(!this.state.init){
       return (
@@ -161,27 +165,18 @@ class Home extends React.Component {
     if(this.state.filteredInfo && this.state.filteredInfo.tenkhachhang && this.state.filteredInfo.tenkhachhang.length > 0){
       DOs = DOs.filter(el => {return this.state.filteredInfo.tenkhachhang.indexOf(el.khachhang + '') >= 0})
     }
-    console.log(this.state.filteredInfo)
+
+    let DT = intersection(role, [301, 303]).length > 0
+    let sum = 0
+    if(DT){
+      DOs.map(el => {
+        sum += (el.doanhthu || []).length > 0 ? el.doanhthu[0] : 0
+      })
+    }
+
     return (
       <div>
         <h5 style={{textAlign: 'center'}}>Báo cáo tổng hợp</h5>
-        {/*<DatePicker*/}
-          {/*disabledDate={this.disabledStartDate}*/}
-          {/*format="DD/MM/YYYY"*/}
-          {/*value={startValue}*/}
-          {/*placeholder="Bắt đầu"*/}
-          {/*onChange={this.onStartChange}*/}
-          {/*onOpenChange={this.handleStartOpenChange}*/}
-        {/*/>*/}
-        {/*<DatePicker*/}
-          {/*disabledDate={this.disabledEndDate}*/}
-          {/*format="DD/MM/YYYY"*/}
-          {/*value={endValue}*/}
-          {/*placeholder="Kết thúc"*/}
-          {/*onChange={this.onEndChange}*/}
-          {/*open={endOpen}*/}
-          {/*onOpenChange={this.handleEndOpenChange}*/}
-        {/*/>*/}
         <RangePicker
           defaultValue={[moment(startValue, 'YYYYMMDD'), moment(endValue, 'YYYYMMDD')]}
           format={'DD/MM/YYYY'}
@@ -209,16 +204,26 @@ class Home extends React.Component {
         <Button
           onClick={this.xemLenh}
         >Xem thông tin</Button>
-
+        <br/>
         <div style={{float: 'right'}}>
-          <a href={`${agent.API_ROOT}/dieuhanh/do/excel?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&khachhang=${this.state.khachhang}`} target="_blank"><Button>Xuất Excel</Button></a>
+          <a href={`${agent.API_ROOT}/dieuhanh/do/excel?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&khachhang=${this.state.khachhang}&doanhthu=${intersection(role, [301, 303]).length}`} target="_blank">
+            <Button>Xuất Excel chi tiết</Button></a>
         </div>
 
+        <div style={{float: 'right'}}>
+          <a href={`${agent.API_ROOT}/dieuhanh/do/excelrutgon?start=${moment(this.state.startValue).format('YYYYMMDD')}&end=${moment(this.state.endValue).format('YYYYMMDD')}&khachhang=${this.state.khachhang}&doanhthu=${intersection(role, [301, 303]).length}`} target="_blank">
+            <Button>Xuất Excel rút gọn</Button></a>
+        </div>
+        <br/>
+        {DT && <div style={{fontSize: 16}}>
+          Tổng doanh thu: <span style={{color: 'red'}}>{sum.toLocaleString()} đ</span>
+        </div>}
         <hr/>
 
         <Row>
           <Table dataSource={this.state.do} size="small"
-                 indentSize={30}
+                 // indentSize={30}
+                 // scroll={{ x: 2500}}
                  pagination={{pageSize: 100}}
                  onRowDoubleClick={(record, index, event) => {
                    info(record, this.state.danhsachthauphuObj)
@@ -226,10 +231,8 @@ class Home extends React.Component {
                  onChange={this.handleChange}
                  bordered={true}
           >
-            
-            <ColumnGroup title="Lệnh điều xe"
-            >
-              <Column
+
+              {this.state.display[1] && <Column
                 title="Ngày"
                 key="phongban"
                 render={(text, record) => (
@@ -239,7 +242,7 @@ class Home extends React.Component {
                     {moment(record.date, 'YYYYMMDD').format('DD/MM/YYYY')}
                   </span>
                 )}
-              />
+              />}
               
               <Column
                 title="Mã lệnh"
@@ -253,6 +256,21 @@ class Home extends React.Component {
                   </span>
                 )}
               />
+
+            {(intersection(role, [301, 303]).length > 0) &&
+              <Column
+                title="Doanh thu"
+                dataIndex="doanhthu"
+                key="doanhthu"
+                render={(text, record) => (
+                  <span
+                    style={{color: "red", fontWeight: 'bold'}}
+                  >
+                      {(record.doanhthu || []).length > 0 && record.doanhthu[0].toLocaleString()}
+                    </span>
+                )}
+              />
+            }
               
               <Column
                 title="Biển số xe"
@@ -304,11 +322,26 @@ class Home extends React.Component {
               <Column
                 title="Tỉnh đến"
                 key="diemden"
-                render={(text, record) => (
-                  <span>
+                render={(text, record) => {
+
+                  if(record.tinhtrahang.slug === 'chua-phan'){
+                    if(record.loai === 'noi') {
+                      return (<span>
+                        Nội Thành
+                      </span>)
+                    } else {
+                      return (<span>
+                        Ngoại Thành
+                      </span>)
+                    }
+                  }
+
+                  return (
+                    <span>
                     {record.tinhtrahang ? record.tinhtrahang.name : "Hà nội"}
                   </span>
-                )}
+                  )
+                }}
               />
   
   
@@ -372,11 +405,11 @@ class Home extends React.Component {
                 dataIndex="tienthu"
                 key="tienthu"
               />
-              <Column
-                title="Phí khác"
-                dataIndex="tienphatsinh"
-                key="tienphatsinh"
-              />
+              {/*<Column*/}
+                {/*title="Phí khác"*/}
+                {/*dataIndex="tienphatsinh"*/}
+                {/*key="tienphatsinh"*/}
+              {/*/>*/}
               <Column
                 width={150}
                 title="Ghi chú"
@@ -388,11 +421,21 @@ class Home extends React.Component {
                   </span>
                 )}
               />
-
-            </ColumnGroup>
           </Table>
         </Row>
         <hr/>
+        <Button
+          style={{float: 'right'}}
+          onClick={() => {
+            this.setState({
+              display: {
+                1: !this.state.display[1]
+              }
+            })
+          }}
+        >
+          Display
+        </Button>
       </div>
     )
   }
