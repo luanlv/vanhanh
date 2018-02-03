@@ -7,6 +7,7 @@ import { LocaleProvider  } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import App from './components/App';
 import Home from './components/dashboard/Home';
+import BangGia from './components/dieuhanh/BangGia2';
 import ThongKe from './components/dieuhanh/ThongKe';
 import DuyetChiPhi from './components/dieuhanh/DuyetChiPhi';
 import DuyetChinhSua from './components/dieuhanh/DuyetChinhSua';
@@ -18,6 +19,8 @@ import ThongKeTheoKhachHang from './components/dieuhanh/ThongKeTheoKhachHang';
 import BieuDo from './components/dieuhanh/BieuDo';
 import HomeDieuHanh from './components/dieuhanh/Home';
 import SuaDiaChi from './components/dieuhanh/SuaDiaChi';
+import SuaThauPhu from './components/dieuhanh/SuaThauPhu';
+import SuaKhachHang from './components/dieuhanh/SuaKhachHang';
 import DieuXe from './components/dieuhanh/DO';
 import PhongBan from './components/nhansu/PhongBan';
 import NhanVien from './components/nhansu/NhanVien';
@@ -49,8 +52,11 @@ ReactDOM.render((
           <Route path="duyetchinhsua" component={DuyetChinhSua} />
 
           <Route path="suadiachi" component={SuaDiaChi} />
+          <Route path="suakhachhang" component={SuaKhachHang} />
+          <Route path="suathauphu" component={SuaThauPhu} />
 
           <Route path="doanhthu" component={DoanhThu} />
+          <Route path="banggia" component={BangGia} />
 
         </Route>
       </Router>

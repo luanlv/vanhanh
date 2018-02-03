@@ -210,10 +210,16 @@ class App extends React.Component {
 
                     <SubMenu
                       key="diachi"
-                      title={<span><Icon type="idcard" /><span className="nav-text">Địa chỉ</span></span>}
+                      title={<span><Icon type="idcard" /><span className="nav-text">Chỉnh sửa</span></span>}
                     >
                       <Menu.Item key="diachi1">
                         <Link to="/suadiachi" >Sửa địa chỉ</Link>
+                      </Menu.Item>
+                      <Menu.Item key="khachhang">
+                        <Link to="/suathauphu" >Sửa thầu phụ</Link>
+                      </Menu.Item>
+                      <Menu.Item key="thauphu">
+                        <Link to="/suakhachhang" >Sửa khách hàng</Link>
                       </Menu.Item>
                     </SubMenu>
 
@@ -226,6 +232,14 @@ class App extends React.Component {
                       </Menu.Item>
                     </SubMenu>}
 
+                    <Menu.Item key="banggia">
+                      <Link to="/banggia" >
+                    <span>
+                      <Icon type="layout" />
+                      <span className="nav-text">Bảng giá</span>
+                    </span>
+                      </Link>
+                    </Menu.Item>
 
                   </Menu>
                 </Sider>

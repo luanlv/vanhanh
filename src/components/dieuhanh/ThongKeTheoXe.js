@@ -8,7 +8,7 @@ import {
   APPLY_TAG_FILTER
 } from '../../constants/actionTypes';
 import {bindAll, intersection, debounce} from 'lodash'
-
+import {slugify} from '../_function'
 import { Button, DatePicker, Table, Timeline, Icon, Row, Col, Input, Modal, Card, message, Select, Radio, Tabs, Popconfirm, notification} from 'antd';
 import moment from 'moment'
 
@@ -50,14 +50,17 @@ class Home extends React.Component {
 
       danhsachlaixe: [],
       danhsachlaixeObj: {},
-      
+
+      danhsachxe: [],
+      danhsachxeObj: {},
+
       do: []
     }
     bindAll(this, 'init', 'changeKhachHang', 'changeXe', 'onChangeRange', 'handleChange' )
-    this.init()
   }
   
   componentWillMount = async () => {
+
     const danhsachthauphu = await agent.DieuHanh.danhSachThauPhu()
     let danhsachthauphuObj = {}
 
@@ -104,13 +107,29 @@ class Home extends React.Component {
         init: true,
       }
     })
-
+    this.init()
   }
   
   init = async () => {
     const DO = await agent.DieuHanh.getThongKeTheoXe(this.state.startValue, this.state.endValue, this.state.xe)
+    const chiphiData = await agent.LaiXe.daKhaiBao(this.state.startValue, this.state.endValue, 'tatca')
+    let chiphiObj = {}
+
+    chiphiData.map(chiphi => {
+      if(chiphi.timedieuhanh){
+        chiphiObj[chiphi.do] = {}
+        if(this.state.danhsachxeObj[chiphi.mapDO[0].xe]){
+          chiphi.dinhmuc = this.state.danhsachxeObj[chiphi.mapDO[0].xe].dm
+          chiphiObj[chiphi.do].chiphi = chiphi.sodautinh > 0 ? (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+            : (Math.floor(chiphi.kmdh*chiphi.dinhmuc*chiphi.giadaudh/100) + tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sochuyendh)  + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh) + chiphi.cauduongdh + chiphi.bocxepdh + chiphi.luudemdh + chiphi.luatdh + chiphi.phikhacdh)
+        } else {
+          chiphiObj[chiphi.do].chiphi = 0
+        }
+      }
+    })
     this.setState({
-      do: DO
+      do: DO,
+      chiphiObj: chiphiObj
     })
   }
 
@@ -175,12 +194,27 @@ class Home extends React.Component {
 
     let DT = intersection(role, [301, 303]).length > 0
     let sum = 0
+    let sumChiPhi = 0
+    let _sum = 0
+    let _sumChiPhi = 0
     if(DT){
       DOs.map(el => {
-        sum += (el.doanhthu || []).length > 0 ? el.doanhthu[0] : 0
+        if((el.doanhthu || []).length > 0) {
+          sum += el.doanhthu[0]
+        } else {
+          _sum += 1
+        }
+        if(this.state.chiphiObj[el._id]){
+          if(this.state.chiphiObj[el._id].chiphi > 0){
+            sumChiPhi += this.state.chiphiObj[el._id].chiphi
+          } else {
+            _sumChiPhi += 1
+          }
+        } else {
+          _sumChiPhi += 1
+        }
       })
     }
-
     return (
       <div>
         <h5 style={{textAlign: 'center'}}>Báo cáo theo xe</h5>
@@ -191,6 +225,8 @@ class Home extends React.Component {
           onChange={this.onChangeRange}
         />
         <Select
+          showSearch
+          filterOption={(input, option) => slugify(option.props.children[0]).toLowerCase().indexOf(slugify(input.toLowerCase())) >= 0}
           style={{width: 250}}
           value={this.state.xe}
           onChange={this.changeXe}
@@ -213,7 +249,15 @@ class Home extends React.Component {
         </div>
         <br/>
         {DT && <div style={{fontSize: 16}}>
-          Tổng doanh thu: <span style={{color: 'red'}}>{sum.toLocaleString()} đ</span>
+          Doanh thu: <span style={{color: 'green'}}>{sum.toLocaleString()} đ</span>
+          {_sum > 0 && <span> (thiếu {_sum} chuyến)</span>}
+        </div>}
+        {DT && <div style={{fontSize: 16}}>
+          Chi phí: <span style={{color: 'red'}}>{sumChiPhi.toLocaleString()} đ</span>
+          {_sumChiPhi > 0 && <span> (thiếu {_sumChiPhi} chuyến)</span>}
+        </div>}
+        {DT && <div style={{fontSize: 16}}>
+          DT - CP: <span style={{color: 'green'}}>{(sum - sumChiPhi).toLocaleString()} đ</span>
         </div>}
         <hr/>
 
@@ -263,6 +307,36 @@ class Home extends React.Component {
                     style={{color: "red", fontWeight: 'bold'}}
                   >
                       {(record.doanhthu || []).length > 0 && record.doanhthu[0].toLocaleString()}
+                    </span>
+                )}
+              />
+              }
+              {(intersection(role, [301, 303]).length > 0) &&
+              <Column
+                title="Chi phí"
+                dataIndex="chiphi"
+                key="chiphi"
+                width={100}
+                render={(text, record) => (
+                  <span
+                    style={{color: "red", fontWeight: 'bold'}}
+                  >
+                    {this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi.toLocaleString() : 0}
+                    </span>
+                )}
+              />
+              }
+              {(intersection(role, [301, 303]).length > 0) &&
+              <Column
+                title="DT-CP"
+                dataIndex="DT-CP"
+                key="DT-CP"
+                width={100}
+                render={(text, record) => (
+                  <span
+                    style={{color: (record.doanhthu[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0) > 0) ? "green" : "red", fontWeight: 'bold'}}
+                  >
+                    {(record.doanhthu[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0)).toLocaleString()}
                     </span>
                 )}
               />
@@ -583,4 +657,30 @@ function info(DO, thauphuObj) {
     ),
     onOk() {},
   });
+}
+
+function tienmoichuyen(trongtai, sochuyen){
+  if(trongtai < 9){
+    return 50000
+  } else {
+    return 100000
+  }
+}
+
+function tiendautinh(trongtai, sodautinh){
+  if(trongtai <= 2){
+    return sodautinh*40000
+  } else if(trongtai <= 8){
+    return sodautinh*50000
+  } else {
+    return sodautinh*60000
+  }
+}
+
+function tiendiem(trongtai, sodiem){
+  if(trongtai < 9){
+    return sodiem*10000
+  } else {
+    return sodiem*50000
+  }
 }

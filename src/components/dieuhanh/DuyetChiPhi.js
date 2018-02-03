@@ -150,16 +150,23 @@ class Home extends React.Component {
     let chuaduyet = []
     let daduyet = []
     this.state.do.map((el, idx) => {
+      // console.log(el)
       if(!el.dinhmuc){
         // el.mapDO[0].xe
         // console.log(this.state.danhsachxeObj)
         // console.log(this.state.danhsachxeObj[el.mapDO[0].xe])
-        el.dinhmuc = this.state.danhsachxeObj[el.mapDO[0].xe].dm
+        if(!el.mapDO || el.mapDO.length === 0) {
+          alert(el._id)
+          el.mapDO = [{}]
+        }
+        if(this.state.danhsachxeObj[el.mapDO[0].xe])
+          el.dinhmuc = this.state.danhsachxeObj[el.mapDO[0].xe].dm
+        else
+          el.dinhmuc = 0
       }
       if(!el.giadau){
         el.giadau = this.state.giadau
       }
-      console.log(el)
       if(el.dieuhanh){
         daduyet.push(el)
       } else {
@@ -291,7 +298,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {this.state.danhsachlaixeObj[record.mapDO[0].laixe].ten}
+                      {(this.state.danhsachlaixeObj[record.mapDO[0].laixe] || {} ).ten}
                   </span>
                   )}
                 />
@@ -303,7 +310,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {this.state.khachhangObj[record.mapDO[0].khachhang].value}
+                      {(this.state.khachhangObj[record.mapDO[0].khachhang] || {}).value}
                   </span>
                   )}
                 />
@@ -315,7 +322,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.mapDO[0].tinhxuatphat.name}
+                      {(record.mapDO[0].tinhxuatphat || {}).name}
                   </span>
                   )}
                 />
@@ -327,7 +334,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.mapDO[0].tinhtrahang.name}
+                      {(record.mapDO[0].tinhtrahang || {} ).name}
                   </span>
                   )}
                 />
@@ -682,7 +689,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {this.state.danhsachlaixeObj[record.mapDO[0].laixe].ten}
+                      {(this.state.danhsachlaixeObj[record.mapDO[0].laixe] || {} ).ten}
                   </span>
                   )}
                 />
@@ -694,7 +701,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {this.state.khachhangObj[record.mapDO[0].khachhang].value}
+                      {(this.state.khachhangObj[record.mapDO[0].khachhang] || {}).value}
                   </span>
                   )}
                 />
@@ -706,7 +713,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.mapDO[0].tinhxuatphat.name}
+                      {(record.mapDO[0].tinhxuatphat || {}).name}
                   </span>
                   )}
                 />
@@ -718,7 +725,7 @@ class Home extends React.Component {
                   // key="ghichu"
                   render={(text, record) => (
                     <span>
-                      {record.mapDO[0].tinhtrahang.name}
+                      {(record.mapDO[0].tinhtrahang || {} ).name}
                   </span>
                   )}
                 />

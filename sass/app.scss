@@ -18,3 +18,6 @@
   background: yellow !important;
   font-weight: bold !important;
 }
+
+
+.ant-table-tbody tr:nth-child(even) {background: rgba(100, 100, 100, 0.05)}
