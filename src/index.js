@@ -4,7 +4,7 @@ import React from 'react';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import store from './store';
 import { LocaleProvider  } from 'antd-mobile';
-import enUS from 'antd-mobile/lib/locale-provider/en_US';
+// import viVN from 'antd-mobile/lib/locale-provider/vi_VN';
 import App from './components/App';
 import Home from './components/dashboard/Home';
 import BangGia from './components/dieuhanh/BangGia2';
@@ -28,7 +28,6 @@ import ThuChi from './components/thuquy/Quy';
 import DoanhThu from './components/dieuhanh/DoanhThu';
 
 ReactDOM.render((
-  <LocaleProvider locale={enUS}>
     <Provider store={store}>
       <Router history={hashHistory}>
         <Route path="/" component={App}>
@@ -61,5 +60,4 @@ ReactDOM.render((
         </Route>
       </Router>
     </Provider>
-  </LocaleProvider>
 ), document.getElementById('root'));

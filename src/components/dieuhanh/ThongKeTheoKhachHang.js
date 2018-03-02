@@ -164,13 +164,13 @@ class Home extends React.Component {
     let xeFilter=[]
     let khachHangFilter=[]
     this.state.do.forEach((el) => {
-      if(laixeFilter.findIndex(i => {i.value === el.laixe}) < 0){
+      if(laixeFilter.findIndex(i => {return i.value === el.laixe}) < 0){
         laixeFilter.push({key: el.laixe, text: that.state.danhsachlaixeObj[el.laixe].ten + ' - ' + that.state.danhsachlaixeObj[el.laixe].ma, value: el.laixe } )
       }
-      if(xeFilter.findIndex(i => {i.value === el.xe}) < 0){
+      if(xeFilter.findIndex(i => {return i.value === el.xe}) < 0){
         xeFilter.push({key: el.xe, text: el.xe, value: el.xe } )
       }
-      if(khachHangFilter.findIndex(i => {i.value === el.khachhang}) < 0){
+      if(khachHangFilter.findIndex(i => {return i.value === el.khachhang}) < 0){
         khachHangFilter.push({key: el.khachhang, text: el.mapKhachhang[0] ? el.mapKhachhang[0].value : '', value: el.khachhang } )
       }
     })
@@ -190,7 +190,7 @@ class Home extends React.Component {
       DOs = DOs.filter(el => {return this.state.filteredInfo.tenkhachhang.indexOf(el.khachhang + '') >= 0})
     }
 
-    let DT = intersection(role, [301, 303]).length > 0
+    let DT = intersection(role, [301, 303]).length > 0 && this.state.endValue >= 20180101
     let sum = 0
     let sumChiPhi = 0
     let _sum = 0
@@ -297,7 +297,7 @@ class Home extends React.Component {
                 )}
               />
 
-              {(intersection(role, [301, 303]).length > 0) &&
+              {(intersection(role, [301, 303]).length > 0) &&  this.state.endValue >= 20180101 &&
               <Column
                 title="Doanh thu"
                 dataIndex="doanhthu"
@@ -311,7 +311,7 @@ class Home extends React.Component {
                 )}
               />
               }
-              {(intersection(role, [301, 303]).length > 0) &&
+              {(intersection(role, [301, 303]).length > 0) &&  this.state.endValue >= 20180101 &&
               <Column
                 title="Chi phí"
                 dataIndex="chiphi"
@@ -326,7 +326,7 @@ class Home extends React.Component {
                 )}
               />
               }
-              {(intersection(role, [301, 303]).length > 0) &&
+              {(intersection(role, [301, 303]).length > 0) &&  this.state.endValue >= 20180101 &&
               <Column
                 title="DT-CP"
                 dataIndex="DT-CP"

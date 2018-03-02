@@ -1239,7 +1239,7 @@ class Home extends React.Component {
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
                     parser={value => value.replace(/(,*)/g, '')}
-                    style={{width: '100%'}}
+                    style={{width: '39%'}}
                     placeholder="Giá dầu"
                     defaultValue={this.state.chiphi.giadaudh || 0}
                     onChange={(value) => {
@@ -1258,9 +1258,13 @@ class Home extends React.Component {
                       })
                     }}
                   />
+                  <div
+                    style={{width: '59%', display: 'inline'}}
+                  >
+                    <b style={{color: 'red'}}> =>  {Math.floor(this.state.chiphi.kmdh*this.state.chiphi.dinhmuc*this.state.chiphi.giadaudh/100).toLocaleString()} đ</b>
+                  </div>
                 </td>
               </tr>
-
               <tr>
                 <td style={{border: '1px solid #ddd'}}>Số đầu tỉnh</td>
                 <td style={{textAlign: 'center', border: '1px solid #ddd'}}><b style={{color: 'red'}}>{this.state.chiphi.sodautinh}</b></td>
@@ -1299,7 +1303,7 @@ class Home extends React.Component {
                     min={0}
                     formatter={value => `${value.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}
                     parser={value => value.replace(/(,*)/g, '')}
-                    style={{width: '100%'}}
+                    style={{width: '39%'}}
                     placeholder="KM điểm"
                     defaultValue={this.state.chiphi.sodiemdh || 0}
                     onChange={(value) => {
@@ -1318,6 +1322,12 @@ class Home extends React.Component {
                       })
                     }}
                   />
+                  <div
+                    style={{width: '59%', display: 'inline'}}
+                  >
+                    {chiphi.sodautinh > 0 && <b style={{color: 'red'}}>=> {(tiendautinh(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh)).toLocaleString()} đ</b>}
+                    {chiphi.sodautinh === 0 && <b style={{color: 'red'}}>=> {(tienmoichuyen(chiphi.mapDO[0].trongtai, chiphi.sodautinhdh) + tiendiem(chiphi.mapDO[0].trongtai, chiphi.sodiemdh)).toLocaleString()} đ</b>}
+                  </div>
                 </td>
               </tr>
 

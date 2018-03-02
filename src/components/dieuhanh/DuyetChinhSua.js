@@ -58,8 +58,7 @@ class DuyetChinhSua extends React.Component {
 
       danhsach: []
     }
-    bindAll(this, 'init')
-    this.init()
+    bindAll(this, 'init', 'init2')
   }
   
   componentWillMount = async () => {
@@ -74,6 +73,7 @@ class DuyetChinhSua extends React.Component {
       khachhang: khachhang,
       khachhangObj: khachhangObj,
     })
+    this.init()
   }
   
   init = async () => {
@@ -119,6 +119,14 @@ class DuyetChinhSua extends React.Component {
     }
   }
 
+  init2 = async () => {
+    let that = this
+    let danhsach = await agent.DieuHanh.danhsachchinhsua()
+    this.setState({
+      danhsach: danhsach,
+    })
+  }
+
   
   render() {
 
@@ -149,7 +157,7 @@ class DuyetChinhSua extends React.Component {
                           agent.DieuHanh.keToanHuyDuyetChinhSua({id: el.do})
                             .then(res => {
                               message.success('Duyệt thành công')
-                              that.init()
+                              that.init2()
                             })
                         }}
                 >Hủy</Button>
