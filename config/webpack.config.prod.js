@@ -14,7 +14,7 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const moment = require('moment')
 
-let v = moment(Date.now()).format('YYYYMMDDHHmm');
+let v = moment(Date.now()).format('YYYYMMDDHHmm') + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.

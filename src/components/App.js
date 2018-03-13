@@ -109,7 +109,7 @@ class App extends React.Component {
                   <Menu theme="dark"
                         mode={this.state.mode}
                         selectedKeys={[this.props.name]}
-                        defaultOpenKeys={['duyetchiphi', 'lenhdieuxe', 'thongke', 'thuquy', 'duyetchinhsua', 'diachi', 'doanhthu']}
+                        defaultOpenKeys={['duyetchiphi', 'thongke', 'thuquy', 'diachi', 'doanhthu']}
                   >
                     <Menu.Item key="Dashboard">
                       <Link to="/">
@@ -120,20 +120,16 @@ class App extends React.Component {
                       </Link>
                     </Menu.Item>
 
-                    {(intersection(role, [302, 101, 201, 1002]).length > 0) && <SubMenu
-                      key="lenhdieuxe"
-                      title={<span><Icon type="idcard" /><span className="nav-text">Lệnh điều xe</span></span>}
-                    >
-                      <Menu.Item key="lenhdieuxe1">
-                        <Link to={"do/dieuxe"} >Lệnh điều xe</Link>
+                    {(intersection(role, [302, 101, 201, 1002]).length > 0) && 
+                      <Menu.Item key="lenhdieuxe">
+                        <Link to="do/dieuxe">
+                          <span>
+                            <Icon type="layout" />
+                            <span className="nav-text">Lệnh điều xe</span>
+                          </span>
+                        </Link>
                       </Menu.Item>
-
-                      {/*<Menu.Item key="lenhdieuxe3">*/}
-                        {/*<Link to="#" >Lịch sử</Link>*/}
-                      {/*</Menu.Item>*/}
-
-                    </SubMenu>}
-
+                    }
                     {(intersection(role, [1004, 1005]).length > 0) && <SubMenu
                       key="duyetchiphi"
                       title={<span><Icon type="idcard" /><span className="nav-text">Chi phí</span></span>}
@@ -209,7 +205,7 @@ class App extends React.Component {
                     </SubMenu>
 
                     <SubMenu
-                      key="diachi"
+                      key="chinhsua"
                       title={<span><Icon type="idcard" /><span className="nav-text">Chỉnh sửa</span></span>}
                     >
                       <Menu.Item key="diachi1">
@@ -256,7 +252,7 @@ class App extends React.Component {
                     </div>
                   </Content>
                   <Footer style={{ textAlign: 'center'}}>
-                    Admin Page ©201 Created by Lưu Văn Luận
+                    Colombus
                   </Footer>
                 </Layout>
               </Layout>

@@ -321,13 +321,14 @@ class Home extends React.Component {
                 dataIndex="doanhthu"
                 key="doanhthu"
                 width={100}
-                render={(text, record) => (
+                render={(text, record) => {
+                  return (
                   <span
                     style={{color: "green", fontWeight: 'bold'}}
                   >
-                      {(record.doanhthu || []).length > 0 && record.doanhthu[0].toLocaleString()}
+                      {record.doanhthu && record.doanhthu[0] && record.doanhthu[0].toLocaleString()}
                     </span>
-                )}
+                )}}
               />
             }
             {(intersection(role, [301, 303]).length > 0) && this.state.endValue >= 20180101 &&
@@ -340,7 +341,7 @@ class Home extends React.Component {
                   <span
                     style={{color: "red", fontWeight: 'bold'}}
                   >
-                    {this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi.toLocaleString() : 0}
+                    {this.state.chiphiObj[record._id] && this.state.chiphiObj[record._id].chiphi.toLocaleString()}
                     </span>
                 )}
               />
@@ -353,9 +354,9 @@ class Home extends React.Component {
                 width={100}
                 render={(text, record) => (
                   <span
-                    style={{color: (record.doanhthu[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0) > 0) ? "green" : "red", fontWeight: 'bold'}}
+                    style={{color: ((record.doanhthu | [])[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0) > 0) ? "green" : "red", fontWeight: 'bold'}}
                   >
-                    {(record.doanhthu[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0)).toLocaleString()}
+                    {record.doanhthu && record.doanhthu[0] && ((record.doanhthu | [])[0] - (this.state.chiphiObj[record._id] ? this.state.chiphiObj[record._id].chiphi : 0)).toLocaleString()}
                     </span>
                 )}
               />
