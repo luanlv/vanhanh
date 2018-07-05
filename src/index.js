@@ -15,6 +15,7 @@ import DuyetChiPhiKeToan from './components/dieuhanh/DuyetChiPhiKeToan';
 import ThongKeTheoLaiXe from './components/dieuhanh/ThongKeLaiXe';
 import ThongKeTheoXe from './components/dieuhanh/ThongKeTheoXe';
 import ThongKeTheoThauPhu from './components/dieuhanh/ThongKeTheoThauPhu';
+import ThongKeTheoThauPhu2 from './components/dieuhanh/ThongKeTheoThauPhu2';
 import ThongKeTheoKhachHang from './components/dieuhanh/ThongKeTheoKhachHang';
 import BieuDo from './components/dieuhanh/BieuDo';
 import HomeDieuHanh from './components/dieuhanh/Home';
@@ -41,6 +42,7 @@ ReactDOM.render((
           <Route path="thongketheolaixe" component={ThongKeTheoLaiXe} />
           <Route path="thongketheoxe" component={ThongKeTheoXe} />
           <Route path="thongketheothauphu" component={ThongKeTheoThauPhu} />
+          <Route path="thongketheothauphu2" component={ThongKeTheoThauPhu2} />
           <Route path="thongketheokhachhang" component={ThongKeTheoKhachHang} />
           <Route path="bieudo" component={BieuDo} />
           <Route path="thuchi" component={ThuChi} />

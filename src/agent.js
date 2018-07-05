@@ -213,6 +213,8 @@ const DieuHanh = {
     requests.post(`/dieuhanh/autofill/newPlace`, data),
   themKhachHang: (data) =>
     requests.post(`/themkhachhang`, data),
+  dhThemLaiXe: (data) =>
+    requests.post(`/themlaixe`, data),
   themThauPhu: (data) =>
     requests.post(`/themthauphu`, data),
   khachHang: () =>

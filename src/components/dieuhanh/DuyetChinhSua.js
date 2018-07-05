@@ -31,6 +31,36 @@ const mapDispatchToProps = dispatch => ({
     dispatch({  type: HOME_PAGE_UNLOADED })
 });
 
+// var jsondiffpatch = require('jsondiffpatch').create({
+//   // used to match objects when diffing arrays, by default only === operator is used
+//   objectHash: function(obj) {
+//     // this function is used only to when objects are not equal by ref
+//     return obj._id || obj.id;
+//   },
+//   arrays: {
+//     // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
+//     detectMove: true,
+//     // default false, the value of items moved is not included in deltas
+//     includeValueOnMove: false
+//   },
+//   textDiff: {
+//     // default 60, minimum string length (left and right sides) to use text diff algorythm: google-diff-match-patch
+//     minLength: 60
+//   },
+//   propertyFilter: function(name, context) {
+//     /*
+//      this optional function can be specified to ignore object properties (eg. volatile data)
+//      name: property name, present in either context.left or context.right objects
+//      context: the diff context (has context.left and context.right objects)
+//      */
+//     return name.slice(0, 1) !== '$';
+//   },
+//   cloneDiffValues: false /* default false. if true, values in the obtained delta will be cloned
+//    (using jsondiffpatch.clone by default), to ensure delta keeps no references to left or right objects. this becomes useful if you're diffing and patching the same objects multiple times without serializing deltas.
+//    instead of true, a function can be specified here to provide a custom clone(value)
+//    */
+// });
+
 
 
 class DuyetChinhSua extends React.Component {
@@ -89,6 +119,7 @@ class DuyetChinhSua extends React.Component {
       const danhsachlaixe = await agent.DieuHanh.danhsachlaixe()
       const danhsachxe = await agent.DieuHanh.danhsachxe()
       let danhsach = await agent.DieuHanh.danhsachchinhsua()
+      // console.log(danhsach)
       // console.log(date)
       let tp = {}
       danhsachthauphu.forEach(el => {
@@ -146,6 +177,16 @@ class DuyetChinhSua extends React.Component {
             <Row
               key={idx}
               style={{padding: 10, border: '2px solid #333', cursor: 'pointer', marginBottom: 20, fontSize: 10, radius: 10}}>
+              <div>
+                Mục đã sửa:
+                {/*<div style={{color: 'red'}}>Số đầu tỉnh</div>*/}
+                {(el.cu.loai !== el.moi.loai) && <div style={{color: 'red'}}>Nội thành/Ngoại thành/Tỉnh</div>}
+                {(el.cu.thauphu !== el.moi.thauphu) && <div style={{color: 'red'}}>Thầu phụ</div>}
+                {(el.cu.khachhang !== el.moi.khachhang) && <div style={{color: 'red'}}>Khách hàng</div>}
+                {(el.cu.laixe !== el.moi.laixe) && <div style={{color: 'red'}}>Lái xe</div>}
+                {(el.cu.xe !== el.moi.xe) && <div style={{color: 'red'}}>Xe</div>}
+              </div>
+
               <div
                 style={{textAlign: 'right', marginLeft: 40, marginRight: 40}}
               >
@@ -188,9 +229,12 @@ class DuyetChinhSua extends React.Component {
                       edit={true}
                       date={el.cu.date}
                       duyetchinhsua={true}
+                      chinhsua={el.diff}
                   />
+
                 </Col>
                 <Col span={12}>
+
                   <DO danhsachxe={this.state.danhsachxe}
                       danhsachlaixe={this.state.danhsachlaixe}
                       danhsachthauphu={this.state.danhsachthauphu}
@@ -203,7 +247,9 @@ class DuyetChinhSua extends React.Component {
                       edit={true}
                       date={el.moi.date}
                       duyetchinhsua={true}
+                      chinhsua={el.diff}
                   />
+
                 </Col>
               </div>
             </Row>

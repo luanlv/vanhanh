@@ -36,6 +36,7 @@ import tinhObj from '../tinhObj.json'
 import tinhArr from '../tinhArr.json'
 import CreateKhachHang from './component/CreateKhachHang'
 import CreateThauPhu from './component/CreateThauPhu'
+import CreateLaiXe from './component/CreateLaiXe'
 
 const Option = Select.Option;
 const Promise = global.Promise;
@@ -108,7 +109,6 @@ class DOPage extends React.Component {
         loai: '',
         tinh: [],
         sotinh: 0,
-
         lenhtruoc: props.quaydau ? props.DOTruoc._id : 0,
         doitruong:  madoitruong,
         quaydau: this.props.quaydau || false,
@@ -429,6 +429,9 @@ class DOPage extends React.Component {
     {this.state.data.diemxuatphat.map((el, index) => {
       diembatdauOption.push(<Option key={'' + index} value={'' + index}>{el.name}</Option>)
     })}
+    let chinhsua = this.props.chinhsua || {}
+    // console.log(chinhsua)
+
     return (
       <div className="home-page" style={{marginTop: 0 }}>
         <div style={{padding: 5}}>
@@ -454,7 +457,7 @@ class DOPage extends React.Component {
               {!this.state.data.quaydau && <b>{moment(this.state.data.date, 'YYYYMMDD').format('DD/MM/YYYY')}</b>}
             </Row>}
 
-            <Row style={{textAlign: 'center'}}>
+            <Row style={{textAlign: 'center', border: chinhsua.loai?'1px solid red':''}}>
               <Radio.Group
                 size="large"
                 value={this.state.data.loai}
@@ -484,7 +487,7 @@ class DOPage extends React.Component {
 
             {(this.props.tinhtrang < 0 || this.props.edit) && this.state.data.loai && this.state.data.loai === 'tinh' && <Row style={{marginTop: 10, marginBottom: 20}}>
 
-              <Col span={24} sm={12}>
+              <Col span={24} sm={12} style={{border: chinhsua.sotinh?'1px solid red':''}}>
                 <b style={{fontSize: 16}}>Số đầu tỉnh</b>
                 <br/>
                 <Input
@@ -506,7 +509,7 @@ class DOPage extends React.Component {
                 />
               </Col>
 
-              <Col span={24} sm={12}>
+              <Col span={24} sm={12} style={{border: chinhsua.tinh?'1px solid red':''}}>
                 <b style={{fontSize: 16}}>Tỉnh trả hàng:</b>
                 <br/>
                 <Select
@@ -532,7 +535,7 @@ class DOPage extends React.Component {
 
               </Col>
 
-              <Col span={24} sm={12}>
+              <Col span={24} sm={12} style={{border: chinhsua.tinhxuatphat?'1px solid red':''}}>
                 <b style={{fontSize: 16}}>Tỉnh xuất phát:</b>
                 <br/>
                 <Tinh
@@ -560,7 +563,9 @@ class DOPage extends React.Component {
                 Xe: <b style={{color: 'red'}}>{this.props.DOTruoc.xe}</b>
               </Row>}
 
-              {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row>
+              {((this.props.tinhtrang < 0 && this.props.thauphu) || (this.props.edit && this.state.data.thauphu !== 101)) && !this.props.quaydau && <Row
+                style={{border: chinhsua.thauphu?'1px solid red':''}}
+              >
                 <b style={{fontSize: 16}}>Thầu phụ: </b>
                 <Select
                   showSearch
@@ -620,7 +625,7 @@ class DOPage extends React.Component {
               }
 
               {this.props.tinhtrang >=0 && this.state.data.thauphu === 101 && <Row>
-                  <Col>
+                  <Col style={{border: chinhsua.laixe?'1px solid red':''}}>
                     <b style={{fontSize: 16}}>Lái xe:</b>
                     <SelectLaiXe
                       disabled={!(intersection(role, [1002]).length > 0)}
@@ -628,8 +633,32 @@ class DOPage extends React.Component {
                       defaultValue={"" + this.state.data.laixe}
                       handleChange={this.changeLaiXe.bind(this)}
                     />
+                    <CreateLaiXe
+                      handleOk={(el) => {
+                        let that = this;
+                        // this.initKhachHang()
+                        // console.log(el)
+
+                        let laixeNew = this.state.laixe
+                        laixeNew.push(el)
+                        let laixeObjNew  = this.state.laixeObj
+                        laixeObjNew[el.ma] = el
+                        this.setState(prev => {
+                          return {
+                            ...prev,
+                            data: {
+                              ...prev.data,
+                              laixe: laixeNew,
+                              laixeObj: laixeObjNew
+                            }
+                          }
+                        })
+                      }}
+                    />
                   </Col>
-                  <Col span={24}>
+                  <Col span={24}
+                    style={{border: chinhsua.xe?'1px solid red':''}}
+                  >
                     <b style={{fontSize: 16}}>Xe:</b>
 
                     {/*<AutoComplete*/}
@@ -675,7 +704,9 @@ class DOPage extends React.Component {
               </Row>}
 
 
-              {(this.props.tinhtrang === 0 || this.props.edit) && this.state.data.thauphu !== 101 &&<Row>
+              {(this.props.tinhtrang === 0 || this.props.edit) && this.state.data.thauphu !== 101 &&<Row
+                style={{border: chinhsua.xe?'1px solid red':''}}
+              >
                 <Col>
                   <b style={{fontSize: 16}}>BKS:</b>
 
@@ -700,7 +731,9 @@ class DOPage extends React.Component {
               </Row>}
 
 
-              {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row>
+              {((this.props.tinhtrang < 0 && !this.props.quaydau) || this.props.edit ) && <Row
+                style={{border: chinhsua.khachhang?'1px solid red':''}}
+              >
 
                 <Col span={24} sm={12}>
                   <b style={{fontSize: 16}}>Khách hàng:</b>
@@ -729,7 +762,9 @@ class DOPage extends React.Component {
                   />
                 </Col>
 
-                <Col span={24} sm={12}>
+                <Col span={24} sm={12}
+                  style={{border: chinhsua.nguoiyeucau?'1px solid red':''}}
+                >
                   <b style={{fontSize: 16}}>Người yêu cầu:</b>
                   {/*<CompleteInput*/}
                   {/*option={this.state.nguoiyeucau}*/}
@@ -751,7 +786,8 @@ class DOPage extends React.Component {
               </Row>}
 
 
-              {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
+              {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10, border: chinhsua.diemxuatphat?'1px solid red':''}}
+              >
 
                 <Col span={24} sm={12}>
                   <b style={{fontSize: 16}}>Điểm đi:</b>
@@ -762,7 +798,9 @@ class DOPage extends React.Component {
                   />
                 </Col>
 
-                <Col span={24} sm={12}>
+                <Col span={24} sm={12}
+                  style={{border: chinhsua.diemtrahang?'1px solid red':''}}
+                >
                   <b style={{fontSize: 16}}>Điểm đến: ({(this.state.data.diemtrahang || []).length} điểm)</b>
                   <SelectPlace
                     multi = {true}
@@ -775,11 +813,11 @@ class DOPage extends React.Component {
 
               {(this.props.tinhtrang < 0 || this.props.edit) && <Row style={{marginTop: 10}}>
 
-                <Col span={24} sm={8}>
+                <Col span={24} sm={8} style={{border: chinhsua.trongtai?'1px solid red':''}}>
                   <b style={{fontSize: 16}}>Trọng tải (tấn):</b>
                   <InputNumber style={{width: '100%'}} size="large"
                                value={this.state.data.trongtai}
-                               min={1} max={100}
+                               min={1} max={1000}
                                onChange={(value) => {
                                  if(!isNaN(parseFloat(value)) || value === '') {
                                    this.setState(prev => {
@@ -806,11 +844,13 @@ class DOPage extends React.Component {
                   />
                 </Col>
 
-                <Col span={24} sm={8}>
+                <Col span={24} sm={8}
+                  style={{border: chinhsua.trongtaithuc?'1px solid red':''}}
+                >
                   <b style={{fontSize: 16}}>Trọng tải thực (kg) :</b>
                   <InputNumber style={{width: '100%'}} size="large"
                                value={this.state.data.trongtaithuc}
-                               min={0} max={20000}
+                               min={0} max={50000}
                                onChange={(value) => {
                                  if(!isNaN(parseFloat(value)) || value === '') {
                                    this.setState(prev => {
@@ -822,6 +862,7 @@ class DOPage extends React.Component {
                                        }
                                      }
                                    })
+
                                  } else {
                                    this.setState(prev => {
                                      return {
@@ -837,11 +878,13 @@ class DOPage extends React.Component {
                   />
                 </Col>
 
-                <Col span={24} sm={8}>
+                <Col span={24} sm={8}
+                  style={{border: chinhsua.cbm?'1px solid red':''}}
+                >
                   <b style={{fontSize: 16}}>CBM (khối):</b>
                   <InputNumber style={{width: '100%'}} size="large"
                                value={this.state.data.cbm}
-                               min={0} max={5000}
+                               min={0} max={50000}
                                onChange={(value) => {
                                  if(!isNaN(parseFloat(value)) || value === '') {
                                    this.setState(prev => {
@@ -870,7 +913,8 @@ class DOPage extends React.Component {
 
               </Row>}
 
-              <Row style={{marginTop: 10}}>
+              <Row style={{marginTop: 10, border: chinhsua.ghichu?'1px solid red':''}}
+              >
                 <b style={{fontSize: 16}}>Ghi chú:</b>
                 <TextArea type="textarea" rows={4}
                        defaultValue={this.state.data.ghichu}

@@ -340,29 +340,30 @@ class Home extends React.Component {
                     </Col>
 
                   </Row>
+                  <Row>
+                    {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
 
-                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
+                      <Button type="primary"
+                              onClick={() => this.chonLaiXe(el)}
+                      >Chọn lái xe</Button>
 
-                    <Button type="primary"
-                            onClick={() => this.chonLaiXe(el)}
-                    >Chọn lái xe</Button>
+                      <span style={{margin: '0 5px'}}>|</span>
 
-                    <span style={{margin: '0 5px'}}>|</span>
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.xoaLenh(el._id)
+                          .then(res => {
+                            message.success("Thành công")
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="danger">Xóa lệnh</Button>
+                      </Popconfirm>
 
-                    <Popconfirm title="Xác nhận?" onConfirm={() => {
-                      agent.DieuHanh.xoaLenh(el._id)
-                        .then(res => {
-                          message.success("Thành công")
-                          this.init(this.state.date, this.state.date2)
-                        })
-                        .catch(err => {
-                          message.error("That bai")
-                        })
-                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                      <Button type="danger">Xóa lệnh</Button>
-                    </Popconfirm>
-
-                  </div>}
+                    </div>}
+                  </Row>
                 </div>
               )
             })}
@@ -429,7 +430,7 @@ class Home extends React.Component {
 
                     <span style={{margin: '0 5px'}}>|</span>
 
-                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                    {editOk && <Popconfirm title="Xác nhận?" onConfirm={() => {
                       agent.DieuHanh.huyLenhThay(el)
                       .then(res => {
                         message.success("Thành công")
@@ -441,13 +442,33 @@ class Home extends React.Component {
                       })
                     }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
                       <Button type="danger">Hủy lệnh</Button>
-                    </Popconfirm>
+                    </Popconfirm>}
 
-                    <span style={{margin: '0 5px'}}>|</span>
+                    {editOk && <span style={{margin: '0 5px'}}>|</span>}
 
-                    <Button
+                    {editOk && <Button
                       onClick={() => this.chinhsua(el)}
-                    >Chỉnh sửa</Button>
+                    >Chỉnh sửa</Button>}
+
+                    {!editOk && <Button
+                        onClick={() => this.chinhsua(el)}
+                      >Chỉnh sửa (qh)</Button>}
+
+                    {editOk && <span style={{margin: '0 5px'}}>|</span>}
+
+                    {editOk && <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.xoaLenh(el._id)
+                        .then(res => {
+                          message.success("Thành công")
+                          this.init(this.state.date, this.state.date2)
+                        })
+                        .catch(err => {
+                          message.error("That bai")
+                        })
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Xóa lệnh</Button>
+                    </Popconfirm>}
+
                   </div> }
                 </div>
               )
@@ -498,75 +519,103 @@ class Home extends React.Component {
                       })}
                     </Col>
                   </Row>
+                  <Row>
+                    {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.daGiaoHang(el)
+                          .then(res => {
+                            message.success("Thành công")
+                            // this.context.router.replace('/dieuhanh');
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="primary">Đã giao hàng</Button>
+                      </Popconfirm>
 
-                  {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
-                    <Popconfirm title="Xác nhận?" onConfirm={() => {
-                      agent.DieuHanh.daGiaoHang(el)
-                      .then(res => {
-                        message.success("Thành công")
-                          // this.context.router.replace('/dieuhanh');
-                        this.init(this.state.date, this.state.date2)
-                      })
-                      .catch(err => {
-                        message.error("That bai")
-                      })
-                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                      <Button type="primary">Đã giao hàng</Button>
-                    </Popconfirm>
+                      <span style={{margin: '0 5px'}}>|</span>
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.huyChuyen(el)
+                          .then(res => {
+                            message.success("Thành công")
+                            // this.context.router.replace('/dieuhanh');
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="danger">Điều rỗng</Button>
+                      </Popconfirm>
+
+                      <span style={{margin: '0 5px'}}>|</span>
+
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.xoaLenh(el._id)
+                          .then(res => {
+                            message.success("Thành công")
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="danger">Xóa lệnh</Button>
+                      </Popconfirm>
 
 
-                    <span style={{margin: '0 5px'}}>|</span>
-                    <Popconfirm title="Xác nhận?" onConfirm={() => {
-                      agent.DieuHanh.huyChuyen(el)
-                      .then(res => {
-                        message.success("Thành công")
-                          // this.context.router.replace('/dieuhanh');
-                        this.init(this.state.date, this.state.date2)
-                      })
-                      .catch(err => {
-                        message.error("That bai")
-                      })
-                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                      <Button type="danger">Điều rỗng</Button>
-                    </Popconfirm>
 
+                      {!el.quaydau && el.lenhtruoc === 0 && <span style={{margin: '0 5px'}}>|</span>}
+                      {!el.quaydau && el.lenhtruoc === 0 && <Button type="danger"
+                                                                    onClick={() => this.lenhquaydau(el)}
+                      >Tạo lệnh quay đầu</Button>}
 
+                      <span style={{margin: '0 5px'}}>|</span>
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.huyChuyen2(el)
+                          .then(res => {
+                            message.success("Thành công")
+                            // this.context.router.replace('/dieuhanh');
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="ghost">Hủy chuyến</Button>
+                      </Popconfirm>
 
-                    {!el.quaydau && el.lenhtruoc === 0 && <span style={{margin: '0 5px'}}>|</span>}
-                    {!el.quaydau && el.lenhtruoc === 0 && <Button type="danger"
-                      onClick={() => this.lenhquaydau(el)}
-                                                          >Tạo lệnh quay đầu</Button>}
+                      <span style={{margin: '0 5px'}}>|</span>
 
-                    <span style={{margin: '0 5px'}}>|</span>
-                    <Popconfirm title="Xác nhận?" onConfirm={() => {
-                      agent.DieuHanh.huyChuyen2(el)
-                      .then(res => {
-                        message.success("Thành công")
-                          // this.context.router.replace('/dieuhanh');
-                        this.init(this.state.date, this.state.date2)
-                      })
-                      .catch(err => {
-                        message.error("That bai")
-                      })
-                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
-                      <Button type="ghost">Hủy chuyến</Button>
-                    </Popconfirm>
+                      {editOk && <div>
+                        <Button
+                          onClick={() => this.chinhsua(el)}
+                        >Chỉnh sửa</Button>
+                        <span style={{margin: '0 5px'}}>|</span>
+                        <Popconfirm title="Xác nhận?" onConfirm={() => {
+                          agent.DieuHanh.xoaLenh(el._id)
+                            .then(res => {
+                              message.success("Thành công")
+                              this.init(this.state.date, this.state.date2)
+                            })
+                            .catch(err => {
+                              message.error("That bai")
+                            })
+                        }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                          <Button type="danger">Xóa lệnh</Button>
+                        </Popconfirm>
 
-                    <span style={{margin: '0 5px'}}>|</span>
+                      </div> }
 
-                    {editOk && <div>
-                      <Button
-                        onClick={() => this.chinhsua(el)}
-                      >Chỉnh sửa</Button>
-                    </div> }
-
-                    {!editOk && <div>
-                      <Button
-                        onClick={() => this.chinhsua(el)}
-                      >Chỉnh sửa (qh)</Button>
-                    </div> }
-                  </div>}
-
+                      {!editOk && <div>
+                        <Button
+                          onClick={() => this.chinhsua(el)}
+                        >Chỉnh sửa (qh)</Button>
+                      </div> }
+                    </div>}
+                  </Row>
                 </div>
               )
             })}
@@ -616,11 +665,27 @@ class Home extends React.Component {
                     </Col>
                   </Row>
                   {(el.nguoitaolenh === this.props.user.ma || this.props.user.ma === 1052) && <div>
-                  {editOk &&
+                  {editOk && <span>
                     <Button
                       onClick={() => this.chinhsua(el)}
-                    >Chỉnh sửa</Button>}
+                    >Chỉnh sửa</Button>
+                    <span style={{margin: '0 5px'}}>|</span>
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.xoaLenh(el._id)
+                        .then(res => {
+                          message.success("Thành công")
+                          this.init(this.state.date, this.state.date2)
+                        })
+                        .catch(err => {
+                          message.error("That bai")
+                        })
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Xóa lệnh</Button>
+                    </Popconfirm>
+                    </span>
+                  }
 
+                    <span style={{margin: '0 5px'}}>|</span>
                     {!editOk &&
                       <Button
                         onClick={() => this.chinhsua(el)}
@@ -684,7 +749,27 @@ class Home extends React.Component {
                       <Button
                         onClick={() => this.chinhsua(el)}
                       >Chỉnh sửa</Button>
+                      <span style={{margin: '0 5px'}}>|</span>
+                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                        agent.DieuHanh.xoaLenh(el._id)
+                          .then(res => {
+                            message.success("Thành công")
+                            this.init(this.state.date, this.state.date2)
+                          })
+                          .catch(err => {
+                            message.error("That bai")
+                          })
+                      }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                        <Button type="danger">Xóa lệnh</Button>
+                      </Popconfirm>
+
                     </div>}
+
+                    {!editOk &&
+                    <Button
+                      onClick={() => this.chinhsua(el)}
+                    >Chỉnh sửa (quá hạn)</Button>}
+
                   </div>}
                 </div>
               )
@@ -740,6 +825,20 @@ class Home extends React.Component {
                     <Button
                       onClick={() => this.chinhsua(el)}
                     >Chỉnh sửa</Button>
+                    <span style={{margin: '0 5px'}}>|</span>
+
+                    <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      agent.DieuHanh.xoaLenh(el._id)
+                        .then(res => {
+                          message.success("Thành công")
+                          this.init(this.state.date, this.state.date2)
+                        })
+                        .catch(err => {
+                          message.error("That bai")
+                        })
+                    }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
+                      <Button type="danger">Xóa lệnh</Button>
+                    </Popconfirm>
                   </div> }
                 </div>
               )
@@ -858,6 +957,13 @@ class Home extends React.Component {
       data: data,
       edit: true
     });
+  }
+  xoa = (data) => {
+    let that = this;
+    agent.DieuHanh.xoaLenh(data._id)
+      .then(res => {
+        that.init(that.state.date, that.state.date2)
+      })
   }
 
   hideModal = () => {

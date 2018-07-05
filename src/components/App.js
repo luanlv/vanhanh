@@ -193,7 +193,7 @@ class App extends React.Component {
                         <Link to="/thongketheoxe" >Theo xe</Link>
                       </Menu.Item>
                       <Menu.Item key="thongketheothauphu">
-                        <Link to="/thongketheothauphu" >Theo thầu phụ</Link>
+                        <Link to="/thongketheothauphu2" >Theo thầu phụ</Link>
                       </Menu.Item>
                       <Menu.Item key="thongketheokhachhang">
                         <Link to="/thongketheokhachhang" >Theo khách hàng</Link>

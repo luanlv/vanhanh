@@ -53,7 +53,6 @@ const data = [
   'Los Angeles battles huge wildfires.',
 ];
 
-
 class Home extends React.Component {
 
   constructor(props){
@@ -158,9 +157,6 @@ class Home extends React.Component {
       </div>
     )
   }
-
-
-
 }
 
 function toTitleCase(str)
