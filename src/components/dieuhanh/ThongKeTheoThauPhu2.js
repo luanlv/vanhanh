@@ -1064,7 +1064,7 @@ function tinhdoanhthu(lenh){
     })
     if(!gia) gia = {}
   }
-  let trongtai = lenh.trongtaithuc < 1.5 ? "1,5" : lenh.trongtaithuc < 2.5 ? "2,5" : lenh.trongtaithuc < 3.5 ? "3,5" : lenh.trongtaithuc < 5 ? "5" : lenh.trongtaithuc < 8 ? "8" : "15"
+  let trongtai = lenh.trongtaithuc <= 1.5 ? "1,5" : lenh.trongtaithuc < 2.5 ? "2,5" : lenh.trongtaithuc < 3.5 ? "3,5" : lenh.trongtaithuc < 5 ? "5" : lenh.trongtaithuc < 8 ? "8" : "15"
   if(!gia[trongtai]) gia[trongtai] = '0'
   let giatrongtai = parseInt(gia[trongtai].replace(/\./g, ''))
   // console.log(gia)

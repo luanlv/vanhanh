@@ -272,6 +272,50 @@ class Home extends React.Component {
           <Button className="newDO" type="primary" onClick={this.thauphu}>Thầu phụ</Button>
         </span>}
 
+        {/*<span style={{marginRight: 5}}>*/}
+          {/*<Button className="newDO" type="primary"*/}
+            {/*onClick={async () => {*/}
+              {/*let that = this;*/}
+              {/*that.state.danhsachlaixe.map((el, idx) => {*/}
+                {/*agent.DieuHanh.themDO(*/}
+                  {/*{"loai":"noi","tinh":[],"sotinh":0,"lenhtruoc":0,"doitruong":null,"quaydau":false,"tienphatsinh":0,"tienthu":0,"trongtaithuc":3000,"cbm":0,"sokm":50,"sodiem":1,"thauphu":101,"khachhang": "106","nguoiyeucau": 103,"xe":"","laixe":"","tinhxuatphat":{"name":"Hà Nội","slug":"ha-noi","type":"thanh-pho","name_with_type":"Thành phố Hà Nội","code":"01"},"tinhtrahang":{"name":"...","slug":"chua-phan","type":"tinh","name_with_type":"...","code":"00"},"ghichu":"","date":20180708,"diemxuatphat":[{"_id":"59ae625760f6600538008a64","name":"Kho Đông Đô","code":"HN025","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"__v":0,"search":"kho dong do hn025","label":"Kho Đông Đô"}],"diemtrahang":[{"_id":"5ad988e7133710622cbe809f","name":"Tri Phương 1 , huyện Tiên Du, tỉnh Bắc Ninh,","code":"cucmpr4f","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"tri phuong 1 huyen tien du tinh bac ninh cucmpr4f","__v":0,"label":"Tri Phương 1 , huyện Tiên Du, tỉnh Bắc Ninh,"},{"_id":"5b0924e66324207584a3d4e4","name":"ST – Cty CP TGDĐ-Mini - Trí Quả - Bắc Ninh","code":"dnjt60zi","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"st cty cp tgdd-mini - tri qua - bac ninh dnjt60zi","__v":0,"label":"ST – Cty CP TGDĐ-Mini - Trí Quả - Bắc Ninh"},{"_id":"5aa936d694a6a6531880b574","name":"Vũ Ninh, tp Bấc Ninh","code":"vxq4cm51","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"vu ninh tp bac ninh vxq4cm51","__v":0,"label":"Vũ Ninh, tp Bấc Ninh"}],"diembatdau":0,"diemxanhat":0,"trongtai":2.5}*/}
+                {/*)*/}
+                  {/*.then(res => {*/}
+                    {/*console.log(res)*/}
+                    {/*agent.DieuHanh.chonlaixe(*/}
+                      {/*{"_id": res._id, "xe":"29C-85832", "date":20180708,"time":"2018-07-08T00:43:01.539Z","laixe": el.ma}*/}
+                    {/*)*/}
+                  {/*})*/}
+                  {/*.catch(err => {*/}
+                    {/*// message.error("Thêm mới that bai")*/}
+                  {/*})*/}
+              {/*})*/}
+            {/*}}*/}
+          {/*>Demo tất cả lái xe</Button>*/}
+           {/*-*/}
+          {/*<Button className="newDO" type="primary"*/}
+                  {/*onClick={async () => {*/}
+                    {/*let that = this;*/}
+                    {/*let promptData = prompt("Please enter your name", "");*/}
+                    {/*let laixe = parseInt(promptData)*/}
+                    {/*if(that.state.danhsachlaixe.find(el => el.ma === laixe)){*/}
+                      {/*agent.DieuHanh.themDO(*/}
+                        {/*{"loai":"noi","tinh":[],"sotinh":0,"lenhtruoc":0,"doitruong":null,"quaydau":false,"tienphatsinh":0,"tienthu":0,"trongtaithuc":3000,"cbm":0,"sokm":50,"sodiem":1,"thauphu":101,"khachhang": "106","nguoiyeucau": 103,"xe":"","laixe":"","tinhxuatphat":{"name":"Hà Nội","slug":"ha-noi","type":"thanh-pho","name_with_type":"Thành phố Hà Nội","code":"01"},"tinhtrahang":{"name":"...","slug":"chua-phan","type":"tinh","name_with_type":"...","code":"00"},"ghichu":"","date":20180708,"diemxuatphat":[{"_id":"59ae625760f6600538008a64","name":"Kho Đông Đô","code":"HN025","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"__v":0,"search":"kho dong do hn025","label":"Kho Đông Đô"}],"diemtrahang":[{"_id":"5ad988e7133710622cbe809f","name":"Tri Phương 1 , huyện Tiên Du, tỉnh Bắc Ninh,","code":"cucmpr4f","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"tri phuong 1 huyen tien du tinh bac ninh cucmpr4f","__v":0,"label":"Tri Phương 1 , huyện Tiên Du, tỉnh Bắc Ninh,"},{"_id":"5b0924e66324207584a3d4e4","name":"ST – Cty CP TGDĐ-Mini - Trí Quả - Bắc Ninh","code":"dnjt60zi","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"st cty cp tgdd-mini - tri qua - bac ninh dnjt60zi","__v":0,"label":"ST – Cty CP TGDĐ-Mini - Trí Quả - Bắc Ninh"},{"_id":"5aa936d694a6a6531880b574","name":"Vũ Ninh, tp Bấc Ninh","code":"vxq4cm51","tinh":{"code":"01","name_with_type":"Thành phố Hà Nội","type":"thanh-pho","slug":"ha-noi","name":"Hà Nội"},"search":"vu ninh tp bac ninh vxq4cm51","__v":0,"label":"Vũ Ninh, tp Bấc Ninh"}],"diembatdau":0,"diemxanhat":0,"trongtai":2.5}*/}
+                      {/*)*/}
+                        {/*.then(res => {*/}
+                          {/*console.log(res)*/}
+                          {/*agent.DieuHanh.chonlaixe(*/}
+                            {/*{"_id": res._id, "xe":"29C-85832", "date":20180708,"time":"2018-07-08T00:43:01.539Z","laixe": laixe}*/}
+                          {/*)*/}
+                        {/*})*/}
+                        {/*.catch(err => {*/}
+                          {/*// message.error("Thêm mới that bai")*/}
+                        {/*})*/}
+                    {/*}*/}
+                  {/*}}*/}
+          {/*>Demo 1 lái xe</Button>*/}
+        {/*</span>*/}
+
         {!editOk && <span style={{marginRight: 5}}>
           <Button className="newDO" type="danger" >Hết hạn</Button>
         </span>}
