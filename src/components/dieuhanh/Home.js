@@ -594,9 +594,9 @@ class Home extends React.Component {
                         <Button type="danger">Điều rỗng</Button>
                       </Popconfirm>
 
-                      <span style={{margin: '0 5px'}}>|</span>
+                      {editOk && <span style={{margin: '0 5px'}}>|</span>}
 
-                      <Popconfirm title="Xác nhận?" onConfirm={() => {
+                      {editOk && <Popconfirm title="Xác nhận?" onConfirm={() => {
                         agent.DieuHanh.xoaLenh(el._id)
                           .then(res => {
                             message.success("Thành công")
@@ -607,7 +607,7 @@ class Home extends React.Component {
                           })
                       }} onCancel={() => {}} okText="Đồng ý" cancelText="Hủy">
                         <Button type="danger">Xóa lệnh</Button>
-                      </Popconfirm>
+                      </Popconfirm>}
 
 
 
